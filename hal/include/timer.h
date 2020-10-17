@@ -29,13 +29,13 @@
 /***************************************************************/
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
-sint_16 timer_init(void);
+sint_16 timer_init(void(*pf_timer_cb)(void));
 
 sint_16 timer_deinit(void);
 
-sint_16 start_timer(uint_32 u32_ms,void(*pf_timer_cb)(void));
+sint_16 start_hal_timer(uint_32 u32_ms);
 
-sint_16 stop_timer(void);
+sint_16 stop_hal_timer(void);
 
 #endif /*_TIMER_H_*/
 

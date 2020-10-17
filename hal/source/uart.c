@@ -1,7 +1,6 @@
 /***************************************************************/
 /**************             includes               *************/
 /***************************************************************/
-#include <avr/io.h>
 #include <avr/interrupt.h>
 #include "gpio.h"
 #include "common.h"
@@ -23,10 +22,10 @@ static bool gb_uart_init = FALSE;
 volatile uint_8 tx_buffer[3];
 volatile uint_8 rx_buffer[16];
 volatile uint_8 tx_bytes = 0;
-volatile uint_8 rx_bytes = 0;
-volatile uint_8 tx_buffer_pos = 0;
+volatile uint_16 rx_bytes = 0;
+volatile uint_16 tx_buffer_pos = 0;
 volatile uint_8 rx_buffer_pos = 0;
-
+volatile bool gb_error_handle = FALSE;
 
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
@@ -36,13 +35,14 @@ volatile uint_8 rx_buffer_pos = 0;
 /**************      Interrupt Handler function    *************/
 /***************************************************************/
 ISR(USART0__UDRE_vect) {
-	if (tx_buffer_pos < tx_bytes) {
+	if (tx_buffer_pos < tx_bytes && gb_error_handle == FALSE) {
 		UDR0 = tx_buffer[(tx_buffer_pos++ & 0x03)];
 	}
 	else {
 		UCSR0B &= ~(1 << UDRIE0);
 		tx_bytes = 0;
 		tx_buffer_pos = 0;
+		gb_error_handle = FALSE;
 	}
 }
 #ifdef UART_RECEIVE_ENABLE
@@ -97,7 +97,7 @@ sint_16 uart_init(tenu_uart_baudrate enu_boadrate)
 			UBRR0L = BAUDRATE(baud);
 			UCSR0B|= (1<<TXEN0)|(1<<RXEN0)|(1<<RXCIE0);
 			UCSR0C|= (1<<UCSZ00)|(1<<UCSZ01);
-			SREG  |= (1<< 7); // enable global intterrupt
+			SREG  |= (1<< 7); // enable global interrupt
 		}
 		else
 		{
@@ -123,25 +123,33 @@ sint_16 uart_deinit(void)
 sint_16 uart_send(sint_8 * s8_data , uint_8 len)
 {
 	sint_16 s16_retval = SUCCESS;
+	
 	if(len != 0 && s8_data != NULL)
 	{
-		uint_8 i;
-		for (i = 0; i < len; i++) {
-			if (s8_data[i] =='\0')
+		uint_8 i = 0;
+		
+		for(i = 0; i < len; i++) {
+			if (s8_data[i] == '\0' )
 			{
 				break;
 			}
-			while (tx_bytes >= (tx_buffer_pos + 0x03));
+			while (tx_bytes >= (tx_buffer_pos + 0x03) && ((UCSR0A & (1<< UDRE0)) == 0));
+			if(tx_bytes >= (tx_buffer_pos + 0x03))
+			{
+				gb_error_handle = TRUE;
+			}
 			uint_8 index = tx_bytes & 0x03;
 			tx_buffer[index] = s8_data[i];
 			tx_bytes++;
 			UCSR0B |= (1 << UDRIE0);
 		}
+		
 	}		
 	else
 	{
 		s16_retval =UART_INVALID_ARGUMENT;
 	}
+	
 	return s16_retval;
 }
 
@@ -165,4 +173,3 @@ uint_8 usart_recv(char * data, uint_8 len, uint_16 o_timeout) {
 	return i;
 }
 #endif
-

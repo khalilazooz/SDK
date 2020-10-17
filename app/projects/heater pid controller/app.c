@@ -4,7 +4,7 @@
 
 #include "app.h"
 #include "debug.h"
-#include "timer.h"
+#include "timer_mngr.h"
 #include <avr/io.h>
 /***************************************************************/
 /**************              Macros                *************/
@@ -21,17 +21,21 @@
 /**************            Static Variable         *************/
 /***************************************************************/
 
-static bool gb_timer_fired = FALSE;
+
+static tstr_timer_mgmt_ins timer1;
+static tstr_timer_mgmt_ins timer2;
 
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
 /***************************************************************/
-
-static void timer_cb(void)
+void t_cb1(void *arg)
 {
-	gb_timer_fired = TRUE;
+	PORTB = 0x01;
 }
-
+void t_cb2(void *arg)
+{
+	PORTB = 0x02;
+}
 
 /***************************************************************/
 /**************    Global APIs Impelementation     *************/
@@ -39,15 +43,13 @@ static void timer_cb(void)
 
 void app_init(void)
 {
-	timer_init();
-	start_timer(5000,timer_cb);
+	DDRB = 0xff;
+	timer_mgmt_init();
+	start_timer(&timer1,50,t_cb1 , NULL);
+	start_timer(&timer2,30,t_cb2 , NULL);
 }
 
 void app_dispatch(void)
 {
-	if(gb_timer_fired == TRUE)
-	{
-		gb_timer_fired = FALSE;
-		SYS_LOGGER_INFO("TIMMMER FIRED");
-	}
+	
 }

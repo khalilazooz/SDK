@@ -2,13 +2,15 @@
 /**************             includes               *************/
 /***************************************************************/
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "timer.h"
 #include "common.h"
 #include "debug.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
-#define TIMER0_LOG_ENABLE
+//#define TIMER0_LOG_ENABLE
+
 #ifdef TIMER0_LOG_ENABLE
 #define TMR0_LOG(...)				SYS_LOGGER("[TM0]: "__VA_ARGS__)
 #define TMR0_LOG_ERR(...)			SYS_LOGGER_ERR("[TM0]: "__VA_ARGS__)
@@ -44,19 +46,22 @@ static bool  gb_timer_enabled = FALSE;
 /***************************************************************/
 /**************      Interrupt Handler function    *************/
 /***************************************************************/
-ISR(TIMER0_OVF_vect)
+ISR(TIMER1_OVF_vect)
 {
 	if(gb_timer_enabled == TRUE)
 	{
+		TMR0_LOG_SUCC("Interrupt");
 		#if(F_CPU == 8000000)
-		TCNT0 = 131;
+		TCNT1 = 53036;
 		#elif(F_CPU == 16000000)
-		TCNT0 = 6 ;
+		TCNT1 = 40536 ;
 		#endif
 		gu32_timer_ms--;
+		
 		if (gu32_timer_ms == 0)
 		{
 			gb_timer_enabled = FALSE;
+			TIMSK  = 0;
 			gpf_timer_cb();
 		}
 	}	
@@ -66,22 +71,32 @@ ISR(TIMER0_OVF_vect)
 /**************    Global APIs Impelementation     *************/
 /***************************************************************/
 
-sint_16 timer_init(void)
+sint_16 timer_init(void(*pf_timer_cb)(void))
 {
 	sint_16 s16_retval = SUCCESS;
 	if(gb_timer_init == FALSE)
 	{
-		gb_timer_init = TRUE;
-		TCCR0 |= (1 << CS01)|(1 << CS00);
+		if(pf_timer_cb != NULL)
+		{
+			gb_timer_init = TRUE;
+			TCCR1B |= (1 << CS11)|(1 << CS10);
+			SREG  |= (1<< 7); // enable global interrupt
 #if(F_CPU == 8000000)
-		TCNT0 = 131;
+			TCNT1 = 53036;
 #elif(F_CPU == 16000000)
-		TCNT0 = 6 ;
+			TCNT1 = 40536 ;
 #else
 #error "Not developed yet"
 #endif
-		TMR0_LOG_SUCC("Initialized Successfully");
+			gpf_timer_cb = pf_timer_cb ;
+			TMR0_LOG_SUCC("Initialized Successfully");
+		}
+		else
+		{
+			TMR0_LOG_ERR("Invalid Arguments");
+		}		
 	}
+
 	return s16_retval;
 }
 
@@ -91,27 +106,29 @@ sint_16 timer_deinit(void)
 	if(gb_timer_init == TRUE)
 	{
 		gb_timer_init = FALSE;
-		TCCR0 = 0 ;
-		TCNT0 = 0;
+		TCCR1B = 0 ;
+		TCNT1 = 0;
+		TIMSK = 0;
 	}
 	return s16_retval;
 }
 
-sint_16 start_timer(uint_32 u32_ms,void(*pf_timer_cb)(void))
+sint_16 start_hal_timer(uint_32 u32_ms)
 {
 	sint_16 s16_retval = SUCCESS;
 	/*Enable and Rest timer*/
-	if(u32_ms !=0 && pf_timer_cb != NULL)
+	if(u32_ms !=0)
 	{
-		(void)timer_init();
+		
 #if(F_CPU == 8000000)
-		TCNT0 = 131;
+		TCNT1 = 53036;
 #elif(F_CPU == 16000000)
-		TCNT0 = 6 ;
+		TCNT1 = 40536 ;
 #endif
 		gb_timer_enabled = TRUE;
 		gu32_timer_ms = u32_ms;
-		gpf_timer_cb = pf_timer_cb ;
+		TIMSK  = (1<<TOIE1);
+		TMR0_LOG_SUCC("timer start successfully");
 	}
 	else
 	{
@@ -121,10 +138,10 @@ sint_16 start_timer(uint_32 u32_ms,void(*pf_timer_cb)(void))
 	return s16_retval;
 }
 
-sint_16 stop_timer(void)
+sint_16 stop_hal_timer(void)
 {
 	sint_16 s16_retval = SUCCESS;
 	gb_timer_enabled = FALSE;
-	s16_retval = timer_deinit();
 	return s16_retval;
 }
+
