@@ -64,7 +64,7 @@ sint_16 uart_init(tenu_uart_baudrate enu_boadrate)
 		if(enu_boadrate < UART_BAUDRATE_INVALID)
 		{
 		//	DDRE |= (1 << PORTE1);     // set pin 3 of Port B as output
-			uint_16 baud;
+			uint_32 baud;
 			switch (enu_boadrate)
 			{
 				case UART_BAUDRATE_4800:

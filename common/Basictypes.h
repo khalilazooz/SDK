@@ -60,7 +60,7 @@
 /**************              Typedef               *************/
 /***************************************************************/
 typedef unsigned char			uint_8	;
-typedef signed char				sint_8	;
+typedef char					sint_8	;
 
 typedef unsigned short int		uint_16	;
 typedef signed short int		sint_16	;

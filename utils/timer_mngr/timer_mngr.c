@@ -37,8 +37,6 @@
 
 
 static tstr_timer_mgmt_ins * gstr_head = NULL ;
-static uint_16 gu16_timer_ticks = 0 ;
-static uint_16 gu16_timer_fire_tick = 0 ;
 static bool gb_init = FALSE;
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
@@ -137,14 +135,15 @@ sint_16 timer_mgmt_init(void)
 {
 	timer_init(timer_cb);
 	gb_init = TRUE;
+	return SUCCESS;
 }
 sint_16 timer_mgmt_deinit()
 {
-	
+	return SUCCESS;
 }
 sint_16 start_timer(tstr_timer_mgmt_ins * timer_inst, uint_16 time_100ms  , void(*pf_cb)(void * arg) , void * arg)
 {
-	if (!timer_exist(gstr_head,timer_inst))
+	if (!timer_exist(&gstr_head,timer_inst))
 	{
 		if (gstr_head == NULL)
 		{
@@ -169,12 +168,13 @@ sint_16 start_timer(tstr_timer_mgmt_ins * timer_inst, uint_16 time_100ms  , void
 	{
 		TMR_LOG_INFO("This timer is aready exist!");
 	}
+	return SUCCESS;
 }
 sint_16 stop_timer()
 {
-	
+	return SUCCESS;
 }
 sint_16 get_time()
 {
-	
+	return SUCCESS;
 }

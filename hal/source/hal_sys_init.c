@@ -3,7 +3,7 @@
 #include <avr/io.h>
 
 #include "debug.h"
-
+#include "app.h"
 
 int main(void)
 {
