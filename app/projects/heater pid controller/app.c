@@ -5,6 +5,7 @@
 #include "app.h"
 #include "debug.h"
 #include "timer_mngr.h"
+#include "lcd_hal.h"
 #include <avr/io.h>
 /***************************************************************/
 /**************              Macros                *************/
@@ -30,11 +31,11 @@ static tstr_timer_mgmt_ins timer2;
 /***************************************************************/
 void t_cb1(void *arg)
 {
-	PORTB = 0x01;
+	
 }
 void t_cb2(void *arg)
 {
-	PORTB = 0x02;
+	lcd_write_word("Hi khalil");
 }
 
 /***************************************************************/
@@ -44,6 +45,8 @@ void t_cb2(void *arg)
 void app_init(void)
 {
 	DDRB = 0xff;
+	lcd_init();
+	lcd_goto_xy(0,0);
 	timer_mgmt_init();
 	start_timer(&timer1,50,t_cb1 , NULL);
 	start_timer(&timer2,30,t_cb2 , NULL);
