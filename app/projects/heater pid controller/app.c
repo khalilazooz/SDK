@@ -35,18 +35,20 @@ void t_cb1(void *arg)
 }
 void t_cb2(void *arg)
 {
-	lcd_write_word("Hi khalil");
+	lcd_string_xy(0,0,(uint_8*)"Hi khalil");
 }
 
 /***************************************************************/
 /**************    Global APIs Impelementation     *************/
 /***************************************************************/
-
+uint_8 msg[8]={0x04, 0x1F, 0x11, 0x11, 0x1F, 0x1F, 0x1F, 0x1F};
 void app_init(void)
 {
 	DDRB = 0xff;
 	lcd_init();
-	lcd_goto_xy(0,0);
+	lcd_command(0xc0);
+	lcd_custom_char(0, msg);
+	lcd_char(0);
 	timer_mgmt_init();
 	start_timer(&timer1,50,t_cb1 , NULL);
 	start_timer(&timer2,30,t_cb2 , NULL);

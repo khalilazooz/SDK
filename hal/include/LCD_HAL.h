@@ -11,7 +11,6 @@
 /**************              Macros                *************/
 /***************************************************************/
 
-
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
@@ -34,28 +33,14 @@
 
 
 
-#define LCD_CMD_CLEAR_DISPLAY	          0x01
-#define LCD_CMD_CURSOR_HOME		          0x02
 
-// Display control
-#define LCD_CMD_DISPLAY_OFF                0x08
-#define LCD_CMD_DISPLAY_NO_CURSOR          0x0c
-#define LCD_CMD_DISPLAY_CURSOR_NO_BLINK    0x0E
-#define LCD_CMD_DISPLAY_CURSOR_BLINK       0x0F
-
-// Function set
-#define LCD_CMD_4BIT_2ROW_5X7              0x28
-#define LCD_CMD_8BIT_2ROW_5X7              0x38
 
 //functions prototype
-void lcd_init(void);
-void lcd_send_command (uint_8 );
-void lcd_write_character(uint_8 );
-void lcd_write_word(uint_8 []);
+void lcd_init (void);
+void lcd_custom_char(uint_8 loc, uint_8 *msg);
 void lcd_clear(void);
-void lcd_set_courser(uint_8,uint_8);
-void lcd_goto_xy (uint_8 , uint_8 );
-
-
-
+void lcd_string_xy (uint_8 row, uint_8 pos, uint_8 *str);
+void lcd_string(uint_8 *str);
+void lcd_char (uint_8 char_data);
+void lcd_command(uint_8 cmnd);
 #endif /* LCD_H_ */
