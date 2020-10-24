@@ -28,6 +28,14 @@
 #define EEPROM_START_ADDRESS	0x01
 
 
+#define D_CHAR_IDX				0
+#define DATA_EQUAL_MARK_IDX		1
+#define DATA_TYPE_IDX			2
+#define S_CHAR_IDX				3
+#define SIZE_EQUAL_MARK_IDX		4
+#define DATA_SIZE_IDX			5
+
+
 /*this for Atmega128 and should be under flag*/
 #define MAX_EXCEED_EEPROM		(4086-DATA_HEADER_SZ)
 
@@ -62,10 +70,9 @@ static bool check_if_exist(enu_memory_type mem_typ,enu_saved_data svd_data,uint_
 				{
 					uint_8	au8_header[DATA_HEADER_SZ]={0};
 					eeprom_read_block((void *)au8_header,(const void *)u16_inc_address,DATA_HEADER_SZ);
-					FLASH_LOG("%d %d\r\n",u16_inc_address,au8_header[1]);
-					if(au8_header[0] == 'D' && au8_header[1] == '=' &&au8_header[3] == 'S' && au8_header[4] == '=')
+					if(au8_header[D_CHAR_IDX] == 'D' && au8_header[DATA_EQUAL_MARK_IDX] == '=' &&au8_header[S_CHAR_IDX] == 'S' && au8_header[SIZE_EQUAL_MARK_IDX] == '=')
 						{
-							if (au8_header[2]==svd_data)
+							if (au8_header[DATA_TYPE_IDX]==svd_data)
 							{
 								b_retval = TRUE;
 								b_found = TRUE;
@@ -73,7 +80,7 @@ static bool check_if_exist(enu_memory_type mem_typ,enu_saved_data svd_data,uint_
 							}
 							else
 							{
-								u16_inc_address = u16_inc_address+DATA_HEADER_SZ+au8_header[5];
+								u16_inc_address = u16_inc_address+DATA_HEADER_SZ+au8_header[DATA_SIZE_IDX];
 							}
 						}
 						else
