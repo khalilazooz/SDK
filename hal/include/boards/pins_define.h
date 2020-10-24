@@ -3,7 +3,7 @@
 #define PIN_CONFIG_H_
 
 #include <avr/io.h>
-#include <util/delay.h>
+
 
 #define LCD_Data_Port			PORTD
 #define LCD_Command_Port		PORTC
