@@ -43,8 +43,6 @@ typedef enum _enu_memory_type
 typedef enum _enu_saved_data
 {
 	TEMPERATURE_SET_POINT = 0,
-	TEMPERATURE_SET_POINT2,
-	TEMPERATURE_SET_POINT3,
 	INVALID_SAVED_DATA,
 }enu_saved_data;
 

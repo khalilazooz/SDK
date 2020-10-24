@@ -46,12 +46,8 @@ void app_init(void)
 {
 	DDRB = 0xff;
 	uint_16 data = 2056;
-	uint_16 data2 = 3000;
-	uint_16 data3 = 5000;
 	flash_init();
 	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
-	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT2,(uint_8 *) &data2,2);
-	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT3,(uint_8 *) &data3,2);
 	timer_mgmt_init();
 	start_timer(&timer1,50,t_cb1 , NULL);
 	start_timer(&timer2,30,t_cb2 , NULL);
@@ -64,10 +60,6 @@ void app_dispatch(void)
 		b_done=FALSE;
 		uint_16 data = 0;
 		flash_load(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
-		SYS_LOGGER("%d\r\n",data);
-		flash_load(INTERNAL_EEPROM,TEMPERATURE_SET_POINT2,(uint_8 *) &data,2);
-		SYS_LOGGER("%d\r\n",data);
-		flash_load(INTERNAL_EEPROM,TEMPERATURE_SET_POINT3,(uint_8 *) &data,2);
 		SYS_LOGGER("%d\r\n",data);
 	}
 }
