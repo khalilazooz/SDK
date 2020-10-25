@@ -1,17 +1,23 @@
 
-
-#ifndef LCD_MNGR_H_
-#define LCD_MNGR_H_
+#ifndef _FLASH_H_
+#define _FLASH_H_
 /***************************************************************/
 /**************             includes               *************/
 /***************************************************************/
 #include "Basictypes.h"
+
+#include <avr/eeprom.h>
+
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
-#define MAX_NUM_OF_PAGES				10
-#define MAX_NUM_OF_PAGES_FOR_EACH_INST	3
 
+
+#define FLASH_INVALID_ARGUMENT			FLASH_ERROR_BASE-1	
+
+#define FLASH_EXCEED_MEMORY_SIZE		FLASH_ERROR_BASE-2
+
+#define FLASH_NO_LOADED_DATA			FLASH_ERROR_BASE-3
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
@@ -19,44 +25,40 @@
 /***************************************************************/
 /************         Structure and Unions         *************/
 /***************************************************************/
-typedef enum _tenu_type_of_data
-{
-	DATA,
-	DATA_WITH_INPUT,
-}tenu_type_of_data;
-
-
-typedef struct _tstr_lcd_mangr_inst
-{
-	uint_8 au8_row1[16];
-	uint_8 au8_row2[16];
-	
-	uint_16 u16_time_out;
-	
-	bool b_enable;
-	
-	tenu_type_of_data enu_row1_data_type;
-	tenu_type_of_data enu_row2_data_type;
-	
-	uint_16 u16_row1_input_data;
-	uint_16 u16_row2_input_data;
-	
-	uint_8 u8_active_port ;
-	uint_8 u8_active_pin ;
-	
-	uint_8 u8_page_selector;
-	struct _tstr_lcd_mangr_inst * next_pages[MAX_NUM_OF_PAGES_FOR_EACH_INST];
-}tstr_lcd_mangr_inst;
-
 
 
 /***************************************************************/
 /**************					Enumes		       *************/
 /***************************************************************/
 
+typedef enum _enu_memory_type
+{
+	INTERNAL_EEPROM = 0,
+	EXTERNAL_I2C_EEPROM,
+	EXTERNAL_SPI_EEPROM,
+	INVALID_EEPROM,
+}enu_memory_type;
+
+
+typedef enum _enu_saved_data
+{
+	TEMPERATURE_SET_POINT = 0,
+	INVALID_SAVED_DATA,
+}enu_saved_data;
+
 
 /***************************************************************/
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
+sint_16 flash_init(void);
+sint_16 flash_save(enu_memory_type mem_typ , enu_saved_data svd_data , uint_8 * data ,uint_16 data_size);
+sint_16 flash_load(enu_memory_type mem_typ , enu_saved_data svd_data , uint_8 * data ,uint_16 data_size);
 
-#endif /*LCD_MNGR_H_*/
+#endif /*_FLASH_H_*/
+
+
+
+
+
+
+
