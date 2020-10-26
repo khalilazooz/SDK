@@ -1,17 +1,23 @@
 
-
-#ifndef LCD_H_
-#define LCD_H_
+#ifndef _FLASH_H_
+#define _FLASH_H_
 /***************************************************************/
 /**************             includes               *************/
 /***************************************************************/
 #include "Basictypes.h"
-#include "pins_define.h"
+
+#include <avr/eeprom.h>
+
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
 
 
+#define FLASH_INVALID_ARGUMENT			FLASH_ERROR_BASE-1	
+
+#define FLASH_EXCEED_MEMORY_SIZE		FLASH_ERROR_BASE-2
+
+#define FLASH_NO_LOADED_DATA			FLASH_ERROR_BASE-3
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
@@ -25,37 +31,34 @@
 /**************					Enumes		       *************/
 /***************************************************************/
 
+typedef enum _enu_memory_type
+{
+	INTERNAL_EEPROM = 0,
+	EXTERNAL_I2C_EEPROM,
+	EXTERNAL_SPI_EEPROM,
+	INVALID_EEPROM,
+}enu_memory_type;
+
+
+typedef enum _enu_saved_data
+{
+	TEMPERATURE_SET_POINT = 0,
+	INVALID_SAVED_DATA,
+}enu_saved_data;
+
 
 /***************************************************************/
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
+sint_16 flash_init(void);
+sint_16 flash_save(enu_memory_type mem_typ , enu_saved_data svd_data , uint_8 * data ,uint_16 data_size);
+sint_16 flash_load(enu_memory_type mem_typ , enu_saved_data svd_data , uint_8 * data ,uint_16 data_size);
+
+#endif /*_FLASH_H_*/
 
 
 
 
 
-#define LCD_CMD_CLEAR_DISPLAY	          0x01
-#define LCD_CMD_CURSOR_HOME		          0x02
-
-// Display control
-#define LCD_CMD_DISPLAY_OFF                0x08
-#define LCD_CMD_DISPLAY_NO_CURSOR          0x0c
-#define LCD_CMD_DISPLAY_CURSOR_NO_BLINK    0x0E
-#define LCD_CMD_DISPLAY_CURSOR_BLINK       0x0F
-
-// Function set
-#define LCD_CMD_4BIT_2ROW_5X7              0x28
-#define LCD_CMD_8BIT_2ROW_5X7              0x38
-
-//functions prototype
-void lcd_init(void);
-void lcd_send_command (uint_8 );
-void lcd_write_character(uint_8 );
-void lcd_write_word(uint_8 []);
-void lcd_clear(void);
-void lcd_set_courser(uint_8,uint_8);
-void lcd_goto_xy (uint_8 , uint_8 );
 
 
-
-#endif /* LCD_H_ */

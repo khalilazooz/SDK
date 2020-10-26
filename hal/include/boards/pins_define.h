@@ -3,19 +3,15 @@
 #define PIN_CONFIG_H_
 
 #include <avr/io.h>
-#include <util/delay.h>
 
-#define DATA_BUS	PORTD
-#define CTL_BUS		PORTC
-#define DATA_DDR	DDRD
-#define CTL_DDR		DDRC
-#define LCD_D4			4
-#define LCD_D5			5
-#define LCD_D6			6
-#define LCD_D7			7
-#define LCD_EN			5
-#define	LCD_RW			4
-#define	LCD_RS			3
+
+#define LCD_Data_Port			PORTD
+#define LCD_Command_Port		PORTC
+#define LCD_Data_Dir			DDRD
+#define LCD_Command_Dir			DDRC
+#define EN			5
+#define	RW			4
+#define	RS			3
 
 
 
