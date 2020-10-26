@@ -1,6 +1,9 @@
 #ifndef _GPIO_INT_H_
 #define _GPIO_INT_H_
 
+#include"Basictypes.h"
+#include"BIT_MATH.h"
+#include"ERROR_STATUS.h"
 /******* PORTS ID ******/
 #define GPIO_U8_PORT_A 0
 #define GPIO_U8_PORT_B 1

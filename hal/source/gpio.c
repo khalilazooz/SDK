@@ -1,7 +1,6 @@
 /** STD LIB DIRECTIVES **/
-#include"Basictypes.h"
-#include"BIT_MATH.h"
-#include"ERROR_STATUS.h"
+
+
 /************************/
 /** COMPONENT DIRECTIVES **/
 #include"gpio.h"
@@ -145,8 +144,8 @@ ErrorStatus  GPIO_enumSetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint
 /*********************************************************************************************************************/
 uint_8  GPIO_enumGetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID)
 {
-	ErrorStatus Local_error= ES_NOK;
-	u8 Local_u8value = 0;
+
+	uint_8 Local_u8value = 0;
 	if((GPIO_u8PortID < 7)&&(GPIO_u8PinID<8))
 	{
 		switch(GPIO_u8PortID)
@@ -159,11 +158,10 @@ uint_8  GPIO_enumGetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID)
 			case GPIO_U8_PORT_F: Local_u8value = GET_BIT(GPIO_U8_PINF,GPIO_u8PinID); break;
 			case GPIO_U8_PORT_G: Local_u8value = GET_BIT(GPIO_U8_PING,GPIO_u8PinID); break;
 		}
-		Local_error= ES_OK;
 	}
 	else
 	{
-		Local_error= ES_OUT_OF_RANGE;
+
 	}
 	return Local_u8value;
 	
