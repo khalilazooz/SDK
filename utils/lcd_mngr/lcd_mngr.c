@@ -6,6 +6,7 @@
 #include "lcd_hal.h"
 #include "lcd_mngr.h"
 #include "debug.h"
+#include "gpio.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -25,7 +26,23 @@
 #define LCD_LOG_SUCC(...)
 #endif
 
+#define SCREEN_ROWS									2
+#define SCREEN_TIMEOUT								50 /*5 sec*/
+#define SCREEN_LIGHT_OFF_TIMEOUT					300 /*30 sec*/
+#define SCREEN_DATA_OFF_TIMEOUT						600 /*60 sec*/
 
+
+#define IDLE_CODE			0
+#define UP_BUTTON			1
+#define UP_CODE				1	
+#define DOWN_BUTTON			1	
+#define DOWN_CODE			2
+#define OK_BUTTON			1	
+#define SELECT_CODE			3
+#define SET_BUTTON			1
+#define SET_CODE			4
+#define BACK_BUTTON			1
+#define BACK_CODE			5
 /***************************************************************/
 /**************            Global Variable         *************/
 /***************************************************************/
@@ -34,55 +51,126 @@
 /***************************************************************/
 /**************            Static Variable         *************/
 /***************************************************************/
-
-static tstr_lcd_mangr_inst * apstr_lcd_mangr[MAX_NUM_OF_PAGES] ;
-static uint_16 gu16_page_indx = 0;
-
-static tstr_lcd_mangr_inst str_lcd_mang_current_active;
+static tstr_lcd_mangr_inst * gpstr_default_lcd_page = NULL;
+static tstr_lcd_mangr_inst * gpstr_current_lcd_page = NULL;
+static tstr_row_data * gpstr_current_row = NULL;
+static uint_8 gu8_button_state;
+static bool gb_need_update = FALSE;
+static uint_8 gu8_screen_pointer = 0;
+static bool gb_lcd_mangr_init = FALSE;
+static bool gb_update= FALSE;
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
 /***************************************************************/
-
+static void lcd_mangr_update(bool need_update)
+{
+	if (need_update)
+	{
+		uint_16 u16_i = 0;
+		for (u16_i = gpstr_current_lcd_page->u8_row_idx; u16_i < gpstr_current_lcd_page->u8_row_idx + SCREEN_ROWS; u16_i++)
+		{
+			uint_16 u16_lcd_index = (u16_i - (gpstr_current_lcd_page->u8_row_idx));
+			if (gu8_screen_pointer == u16_lcd_index)
+			{
+				lcd_string_xy(u16_lcd_index,0,">");
+			}
+			lcd_string_xy(u16_lcd_index,1,gpstr_current_lcd_page->pastr_row_data[u16_i]->au8_data);
+			LCD_LOG("%s\r\n",gpstr_current_lcd_page->pastr_row_data[u16_i]->au8_data);
+			if (gpstr_current_lcd_page->pastr_row_data[u16_i]->enu_data_type == DATA_WITH_INPUT || gpstr_current_lcd_page->pastr_row_data[u16_i]->enu_data_type == DATA_WITH_VARIABLE)
+			{
+				uint_8 au8_data_buffer[4];
+				itoa ((gpstr_current_lcd_page->pastr_row_data[u16_i]->u16_var_data % 10000),au8_data_buffer,10);
+				lcd_string(au8_data_buffer);
+			}
+		}
+		gb_update = FALSE;
+	}
+	else
+	{
+		/*Do nothing*/
+	}
+}
 /***************************************************************/
 /**************    Global APIs Impelementation     *************/
 /***************************************************************/
 
-void lcd_mngr_add_page(tstr_lcd_mangr_inst * str_lcd_mangr_inst ,uint_8  row1_data[16] ,uint_8  row2_data[16] , tenu_type_of_data row1_data_type , tenu_type_of_data row2_data_type ,uint_16 row1_input_data ,uint_16 row2_input_data ,uint_8 active_port,uint_8 active_pin ,tstr_lcd_mangr_inst * apstr_next_pages[MAX_NUM_OF_PAGES_FOR_EACH_INST],uint_16 timeout)
+
+
+sint_16 lcd_mangr_init(tstr_lcd_mangr_inst * pstr_lcd_header_page)
 {
-	if(gu16_page_indx < MAX_NUM_OF_PAGES)
+	if (gb_lcd_mangr_init == FALSE)
 	{
-		apstr_lcd_mangr[gu16_page_indx] = str_lcd_mangr_inst;
-		memcpy((void *) str_lcd_mangr_inst->au8_row1,(const void *) row1_data ,16);
-		memcpy((void *)str_lcd_mangr_inst->au8_row2,(const void *)row2_data ,16);
-		str_lcd_mangr_inst->enu_row1_data_type = row1_data_type ;
-		str_lcd_mangr_inst->enu_row2_data_type = row2_data_type ;
-		str_lcd_mangr_inst->u16_row1_input_data = row1_input_data ;
-		str_lcd_mangr_inst->u16_row2_input_data = row2_input_data ;
-		str_lcd_mangr_inst->u8_active_pin = active_pin;
-		
-		str_lcd_mangr_inst->u8_active_port = active_port;
-		
-		str_lcd_mangr_inst->u8_page_selector = 0;
-		
-		//str_lcd_mangr_inst->next_pages = apstr_next_pages;
-		
-		str_lcd_mangr_inst->u16_time_out = timeout;
-		
-		gu16_page_indx++;
+		if (pstr_lcd_header_page != NULL)
+		{
+			gb_lcd_mangr_init = TRUE;
+			lcd_init();
+			gpstr_default_lcd_page = pstr_lcd_header_page;
+			gpstr_current_lcd_page = pstr_lcd_header_page;
+			lcd_mangr_update(TRUE);
+		}
+		else
+		{
+			/*TODO Invalid Arguments*/
+		}
 	}
 	else
 	{
-		LCD_LOG_ERR("Exceed The maximum number");
+		/*TODO Intialized Before*/
+	}
+	return SUCCESS;
+}
+
+sint_16 lcd_mangr_change_row_data(tstr_lcd_mangr_inst * pstr_lcd_page,uint_16 u16_data,uint_8 u8_row_id)
+{
+	if (pstr_lcd_page != NULL && u16_data != 0 && (pstr_lcd_page->u8_rows_num) >u8_row_id)
+	{
+		pstr_lcd_page->pastr_row_data[u8_row_id]->u16_var_data = u16_data;
+		if (pstr_lcd_page == gpstr_current_lcd_page)
+		{
+			gb_update = TRUE;
+		}
+	}
+	else
+	{
+		/*TODO RETURN Invalid Arguments*/
 	}
 }
 
-void lcd_mangr_init(void)
+void lcd_mangr_dispatch(void)
 {
 	
-}
-
-void dispatch(void)
-{
+	if (UP_BUTTON)
+	{
+		if (gu8_button_state != UP_CODE)
+		{
+			gu8_button_state = UP_CODE;
+		}
+	}
+	else if (DOWN_BUTTON)
+	{
+		if (gu8_button_state != DOWN_CODE)
+		{
+			gu8_button_state = DOWN_CODE;
+		}		
+	}
+	else if (OK_BUTTON)
+	{		
+		if (gu8_button_state != SELECT_CODE)
+		{
+			gu8_button_state = SELECT_CODE;
+		}	
+	}
+	else if (BACK_BUTTON)
+	{
+		if (gu8_button_state != BACK_CODE)
+		{
+			gu8_button_state = BACK_CODE;
+		}
+	}
+	else
+	{
+		gu8_button_state = IDLE_CODE;
+	}
 	
-	
+	lcd_mangr_update(gb_update);
 }

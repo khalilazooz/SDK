@@ -16,47 +16,52 @@
 /**************       Global Extern Variables      *************/
 /***************************************************************/
 
+
 /***************************************************************/
-/************         Structure and Unions         *************/
+/**************					Enumes		       *************/
 /***************************************************************/
 typedef enum _tenu_type_of_data
 {
 	DATA,
 	DATA_WITH_INPUT,
+	DATA_WITH_VARIABLE,
+	DATA_WITH_LINK,
+	INVALID_DATA,
 }tenu_type_of_data;
 
+/***************************************************************/
+/************         Structure and Unions         *************/
+/***************************************************************/
+typedef struct _tstr_lcd_mangr_inst tstr_lcd_mangr_inst;
+
+
+
+typedef struct _tstr_row_data
+{
+	uint_8 u8_id;
+	uint_8 au8_data[15];
+	tenu_type_of_data enu_data_type;
+	uint_16 u16_var_data;
+	tstr_lcd_mangr_inst * pstr_next_page;	
+}tstr_row_data;
 
 typedef struct _tstr_lcd_mangr_inst
 {
-	uint_8 au8_row1[16];
-	uint_8 au8_row2[16];
-	
+	tstr_row_data ** pastr_row_data;
+	uint_8 u8_rows_num;
+	uint_8 u8_row_idx;
 	uint_16 u16_time_out;
-	
-	bool b_enable;
-	
-	tenu_type_of_data enu_row1_data_type;
-	tenu_type_of_data enu_row2_data_type;
-	
-	uint_16 u16_row1_input_data;
-	uint_16 u16_row2_input_data;
-	
-	uint_8 u8_active_port ;
-	uint_8 u8_active_pin ;
-	
-	uint_8 u8_page_selector;
-	struct _tstr_lcd_mangr_inst * next_pages[MAX_NUM_OF_PAGES_FOR_EACH_INST];
+	struct _tstr_lcd_mangr_inst *pstr_prev_page;
 }tstr_lcd_mangr_inst;
 
-
-
-/***************************************************************/
-/**************					Enumes		       *************/
-/***************************************************************/
 
 
 /***************************************************************/
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
 
+
+sint_16 lcd_mangr_init(tstr_lcd_mangr_inst * pstr_lcd_header_page);
+sint_16 lcd_mangr_change_row_data(tstr_lcd_mangr_inst * pstr_lcd_page,uint_16 u16_data,uint_8 u8_row_id);
+void lcd_mangr_dispatch(void);
 #endif /*LCD_MNGR_H_*/
