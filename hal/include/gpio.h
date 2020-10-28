@@ -39,14 +39,14 @@
 /*****************************/
 
 /********** GPIO_FUNCTIONS(PORT,PIN,OUTPUT) ************/
-ErrorStatus  GPIO_enumSetPortDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Direction);
+ErrorStatus  GPIO_SetPortDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Direction);
 
-ErrorStatus  GPIO_enumSetPinDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Direction);
+ErrorStatus  GPIO_SetPinDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Direction);
 
-ErrorStatus  GPIO_enumSetPortValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Value);
+ErrorStatus  GPIO_SetPortValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Value);
 
-ErrorStatus  GPIO_enumSetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Value);
+ErrorStatus  GPIO_SetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Value);
 
-uint_8           GPIO_enumGetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID);
+uint_8       GPIO_GetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID);
 
 #endif

@@ -31,47 +31,66 @@
 /***************************************************************/
 /**************    Global APIs Impelementation     *************/
 /***************************************************************/
+  void 	lCD_Init(){
+	#if        LCD_MODE    ==  BITS_8
+	lcd_command(0x38);
+	_delay_ms(1);
+	lcd_command(0x0c);
+	_delay_ms(1);
+	lcd_command(0x01);
+	_delay_ms(2);
+	lcd_command(0b00000110);
+	
+	#elif   LCD_MODE  ==   BITS_4
+	
+	#else
+	#error "Wrong LCD MODE!"
+	#endif
+	
+}
 void lcd_command(uint_8 cmnd)
 {
-	LCD_Data_Port= cmnd;
-	LCD_Command_Port &= ~(1<<RS);	/* RS=0 command reg. */
-	LCD_Command_Port &= ~(1<<RW);	/* RW=0 Write operation */
-	LCD_Command_Port |= (1<<EN);	/* Enable pulse */
-	_delay_us(1);
-	LCD_Command_Port &= ~(1<<EN);
+	GPIO_SetPinValue(LCD_Command_Port,RS ,LOW);
+	GPIO_SetPinValue(LCD_Command_Port,RW ,LOW);
+	GPIO_SetPortValue(LCD_Data_Port ,cmnd);
+	GPIO_SetPinValue(LCD_Command_Port,EN ,HIGH);
 	_delay_ms(2);
+	GPIO_SetPinValue(LCD_Command_Port,EN ,LOW);
+		_delay_ms(2);
 }
 
 void lcd_char(uint_8 char_data)  /* LCD data write function */
 {
-	LCD_Data_Port= char_data;
-	LCD_Command_Port |= (1<<RS);	/* RS=1 Data reg. */
-	LCD_Command_Port &= ~(1<<RW);	/* RW=0 write operation */
-	LCD_Command_Port |= (1<<EN);	/* Enable Pulse */
-	_delay_us(1);
-	LCD_Command_Port &= ~(1<<EN);
-	_delay_ms(2);			/* Data write delay */
-}
+	GPIO_SetPinValue(LCD_Command_Port,RS ,HIGH);/* RS=1 Data reg. */
+	GPIO_SetPinValue(LCD_Command_Port,RW ,LOW);/* RW=0 write operation */
+	GPIO_SetPortValue(LCD_Data_Port ,char_data);
+	GPIO_SetPinValue(LCD_Command_Port,EN ,HIGH);/* Enable Pulse */
+	_delay_ms(2);
+	GPIO_SetPinValue(LCD_Command_Port,EN ,LOW);
+	_delay_ms(2);/* Data write delay */
 
-void lcd_init(void)			/* LCD Initialize function */
+}
+/*
+
+void lcd_init(void)			/ * LCD Initialize function * /
 {
-	LCD_Command_Dir = 0xFF;		/* Make LCD command port direction as o/p */
-	LCD_Data_Dir = 0xFF;		/* Make LCD data port direction as o/p */
-	_delay_ms(20);			/* LCD Power ON delay always >15ms */
+	LCD_Command_Dir = 0xFF;		/ * Make LCD command port direction as o/p * /
+	LCD_Data_Dir = 0xFF;		/ * Make LCD data port direction as o/p * /
+	_delay_ms(20);			/ * LCD Power ON delay always >15ms * /
 	
-	lcd_command (0x38);		/* Initialization of 16X2 LCD in 8bit mode */
-	lcd_command (0x0C);		/* Display ON Cursor OFF */
-	lcd_command (0x06);		/* Auto Increment cursor */
-	lcd_command (0x01);		/* clear display */
-	_delay_ms(2);			/* Clear display command delay> 1.63 ms */
-	lcd_command (0x80);		/* Cursor at home position */
+	lcd_command (0x38);		/ * Initialization of 16X2 LCD in 8bit mode * /
+	lcd_command (0x0C);		/ * Display ON Cursor OFF * /
+	lcd_command (0x06);		/ * Auto Increment cursor * /
+	lcd_command (0x01);		/ * clear display * /
+	_delay_ms(2);			/ * Clear display command delay> 1.63 ms * /
+	lcd_command (0x80);		/ * Cursor at home position * /
 }
 
+*/
 
 void lcd_string(uint_8 *str)		/* Send string to LCD function */
 {
-	int i;
-	for(i=0;str[i]!=0;i++)		/* Send each char of string till the NULL */
+	for(int i=0;!str[i];i++)		/* Send each char of string till the NULL */
 	{
 		lcd_char(str[i]);
 	}
@@ -92,6 +111,10 @@ void lcd_clear(void)
 	lcd_command (0x80);		/* cursor at home position */
 }
 
+   	void LCD_cursor_goto(uint_8 copy_u8x,uint_8 copy_u8y){
+	uint_8 first_addres[]={0x80,0xc0};
+lcd_command(first_addres[copy_u8y-1]+ copy_u8x-1);
+}
 
 void lcd_custom_char(uint_8 loc, uint_8 *msg)
 {

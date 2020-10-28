@@ -8,7 +8,7 @@
 
 /************************** FUNCTIONS IMPLEMENTATION **************************/
 
-ErrorStatus  GPIO_enumSetPortDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Direction)
+ErrorStatus  GPIO_SetPortDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Direction)
 {
 	ErrorStatus Local_error= ES_NOK;
 	if(GPIO_u8PortID < 7)
@@ -32,7 +32,7 @@ ErrorStatus  GPIO_enumSetPortDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Direc
 	return Local_error;
 }
 /******************************************************************************/
-ErrorStatus  GPIO_enumSetPinDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Direction)
+ErrorStatus  GPIO_SetPinDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Direction)
 {
 	ErrorStatus Local_error= ES_NOK;
 	if((GPIO_u8PortID < 7)&&(GPIO_u8PinID <8))
@@ -79,7 +79,7 @@ ErrorStatus  GPIO_enumSetPinDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,
 	return Local_error;
 }
 /**************************************************************************/
-ErrorStatus  GPIO_enumSetPortValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Value)
+ErrorStatus  GPIO_SetPortValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Value)
 {
 	ErrorStatus Local_error= ES_NOK;
 	if(GPIO_u8PortID < 7)
@@ -103,7 +103,7 @@ ErrorStatus  GPIO_enumSetPortValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Value)
 	return Local_error;
 }
 /*********************************************************************************************************************/
-ErrorStatus  GPIO_enumSetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Value)
+ErrorStatus  GPIO_SetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Value)
 {
 	ErrorStatus Local_error= ES_NOK;
 	if((GPIO_u8PortID < 7)&&(GPIO_u8PinID<8))
@@ -142,7 +142,7 @@ ErrorStatus  GPIO_enumSetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint
 	return Local_error;
 }
 /*********************************************************************************************************************/
-uint_8  GPIO_enumGetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID)
+uint_8  GPIO_GetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID)
 {
 
 	uint_8 Local_u8value = 0;
