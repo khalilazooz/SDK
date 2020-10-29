@@ -198,7 +198,7 @@ $('document').ready(function(){
 const tstr_row_data * a_`+$(this).find('.pagename').val()+`_rows[]= `+$(this).find('.pastr_row_data').val()+`;
 
 tstr_lcd_mangr_inst `+$(this).find('.pagename').val()+` = {
-.pastr_row_data = a_`+$(this).find('.pagename').val()+`_rows,
+.pastr_row_data = (tstr_row_data **)a_`+$(this).find('.pagename').val()+`_rows,
 .u8_rows_num = `+$(this).find('.u8_rows_num').val()+`,
 .u8_row_idx = 0,
 .u16_time_out = `+$(this).find('.u16_time_out').val()+`,
