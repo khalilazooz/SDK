@@ -65,5 +65,5 @@ void app_dispatch(void)
 		flash_load(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
 		SYS_LOGGER("%d\r\n",data);
 	}
-	
+	lcd_profile_dispatch();
 }

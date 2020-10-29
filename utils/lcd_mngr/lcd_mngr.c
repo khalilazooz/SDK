@@ -59,6 +59,7 @@ static tstr_lcd_mangr_inst * gpstr_default_lcd_page = NULL;
 static tstr_lcd_mangr_inst * gpstr_current_lcd_page = NULL;
 static uint_8 gu8_button_state;
 static uint_8 gu8_screen_pointer = 0;
+static uint_16 gu16_current_value= 0;
 static bool gb_lcd_mangr_init = FALSE;
 static bool gb_update= FALSE;
 static uint_8 gu8_button_function = SELECT_ROW;
@@ -69,7 +70,6 @@ static bool b_screen_timeout = FALSE;
 static bool b_screen_light_off_timeout = FALSE;
 static bool b_screen_data_off_timeout = FALSE;
 static bool b_action = FALSE;
-
 static bool b_screen_light_off = FALSE;
 static bool b_screen_data_off = FALSE;
 /***************************************************************/
@@ -290,6 +290,7 @@ void lcd_mangr_dispatch(void)
 				else
 				{
 					gu8_button_function = UPDATE_VALUE;
+					gu16_current_value = gpstr_current_lcd_page->pastr_row_data[(gpstr_current_lcd_page->u8_row_idx+gu8_screen_pointer)]->u16_var_data;
 					lcd_magr_cursor_show();
 				}
 			}
@@ -319,6 +320,8 @@ void lcd_mangr_dispatch(void)
 			{
 				gu8_button_function = SELECT_ROW;
 				lcd_disable_cursor();
+				gpstr_current_lcd_page->pastr_row_data[(gpstr_current_lcd_page->u8_row_idx+gu8_screen_pointer)]->u16_var_data = gu16_current_value;
+				gb_update = TRUE;
 			}
 			else
 			{
@@ -373,6 +376,7 @@ void lcd_mangr_dispatch(void)
 		if (gpstr_current_lcd_page !=  gpstr_default_lcd_page)
 		{
 			lcd_disable_cursor();
+			gu8_button_function = SELECT_ROW;
 			gpstr_current_lcd_page = gpstr_default_lcd_page;
 			gpstr_current_lcd_page->u8_row_idx = 0 ;
 			gu8_screen_pointer = 0;

@@ -163,11 +163,11 @@ $('document').ready(function(){
 	}
 	else if($(this).find('.datatype').val()=="p2")
 	{
-		dataType="DATA_WITH_INPUT"
+		dataType="DATA_WITH_VARIABLE"
 	}
 	else if($(this).find('.datatype').val()=="p3")
 	{
-		dataType="DATA_WITH_VARIABLE"
+		dataType="DATA_WITH_INPUT"
 	}
 	else if($(this).find('.datatype').val()=="p4")
 	{
