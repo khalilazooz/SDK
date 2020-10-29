@@ -132,6 +132,10 @@
       <SubType>compile</SubType>
       <Link>app\app.c</Link>
     </Compile>
+    <Compile Include="..\..\..\projects\heater pid controller\lcd_profile.c">
+      <SubType>compile</SubType>
+      <Link>app\lcd_profile.c</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
