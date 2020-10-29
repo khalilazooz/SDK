@@ -25,9 +25,9 @@
 
 /************************** FUNCTIONS IMPLEMENTATION **************************/
 
-ErrorStatus  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction)
+sint_16  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction)
 {
-	ErrorStatus Local_error= ES_NOK;
+	
 	if(GPIO_PortID < 7)
 	{
 		switch(GPIO_PortID)
@@ -40,18 +40,18 @@ ErrorStatus  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction)
 			case GPIO_PORT_F: GPIO_DDRF = GPIO_Direction; break;
 			case GPIO_PORT_G: GPIO_DDRG = GPIO_Direction; break;
 		}
-		Local_error= ES_OK;
+		
 	}
 	else
 	{
-		Local_error= ES_OUT_OF_RANGE;
+		return gpio_invaled_argument;
 	}
-	return Local_error;
+	return gpio_success;
 }
 /******************************************************************************/
-ErrorStatus  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Direction)
+sint_16  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Direction)
 {
-	ErrorStatus Local_error= ES_NOK;
+	
 	if((GPIO_PortID < 7)&&(GPIO_PinID <8))
 	{
 		if(GPIO_Direction==GPIO_OUTPUT)
@@ -85,20 +85,20 @@ ErrorStatus  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8
 			}			
 			else
 		{
-			Local_error= ES_OUT_OF_RANGE;
+			return gpio_invaled_argument;
 		}
-		Local_error= ES_OK;
+		
 	}
 	else
 	{
-		Local_error= ES_OUT_OF_RANGE;
+		return gpio_invaled_argument;
 	}
-	return Local_error;
+	return gpio_success;
 }
 /**************************************************************************/
-ErrorStatus  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value)
+sint_16  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value)
 {
-	ErrorStatus Local_error= ES_NOK;
+	
 	if(GPIO_PortID < 7)
 	{
 		switch(GPIO_PortID)
@@ -111,18 +111,18 @@ ErrorStatus  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value)
 			case GPIO_PORT_F: GPIO_PORTF =  GPIO_Value; break;
 			case GPIO_PORT_G: GPIO_PORTG =  GPIO_Value; break;
 		}
-		Local_error= ES_OK;
+		
 	}
 	else
 	{
-		Local_error= ES_OUT_OF_RANGE;
+	return gpio_invaled_argument;	
 	}
-	return Local_error;
+	return gpio_success;
 }
 /*********************************************************************************************************************/
-ErrorStatus  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Value)
+sint_16  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Value)
 {
-	ErrorStatus Local_error= ES_NOK;
+	
 	if((GPIO_PortID < 7)&&(GPIO_PinID<8))
 	{
 		if(GPIO_Value==GPIO_HIGH)
@@ -148,18 +148,18 @@ ErrorStatus  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPI
 				case GPIO_PORT_F: CLR_BIT(GPIO_PORTF,GPIO_PinID); break;
 				case GPIO_PORT_G: CLR_BIT(GPIO_PORTG,GPIO_PinID); break;
 			}
-			Local_error= ES_OK;
+			
 		}
 		
 	}
 	else
 	{
-		Local_error= ES_OUT_OF_RANGE;
+		return gpio_invaled_argument;
 	}
-	return Local_error;
+	return gpio_success;
 }
 /*********************************************************************************************************************/
-uint_8  gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID)
+sint_16 gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8* p)
 {
 
 	uint_8 Local_value = 0;
@@ -178,8 +178,9 @@ uint_8  gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID)
 	}
 	else
 	{
-
+return gpio_invaled_argument;
 	}
-	return Local_value;
+	*p=Local_value;
+	return gpio_success;
 	
 }

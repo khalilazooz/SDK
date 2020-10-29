@@ -3,7 +3,13 @@
 
 #include"Basictypes.h"
 #include"BIT_MATH.h"
-#include"ERROR_STATUS.h"
+
+/*******errors macros***/
+#define gpio_error_base				-500
+#define gpio_success						gpio_error_base
+#define gpio_error						gpio_error_base-1
+#define gpio_invaled_argument			gpio_error_base-2
+
 /******* PORTS ID ******/
 #define GPIO_PORT_A 0
 #define GPIO_PORT_B 1
@@ -39,14 +45,16 @@
 /*****************************/
 
 /********** GPIO_FUNCTIONS(PORT,PIN,OUTPUT) ************/
-ErrorStatus  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction);
+sint_16  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction);
 
-ErrorStatus  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Direction);
+sint_16  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Direction);
 
-ErrorStatus  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value);
+sint_16  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value);
 
-ErrorStatus  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Value);
+sint_16  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Value);
 
-uint_8       gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID);
+sint_16  gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8*p);
 
 #endif
+
+
