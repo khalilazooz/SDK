@@ -5,23 +5,40 @@
 /** COMPONENT DIRECTIVES **/
 #include"gpio.h"
 #include"gpio_register.h"
+#include "debug.h"
+
+#define gpio_LOG_ENABLE
+
+#ifdef gpio_LOG_ENABLE
+#define gpio_LOG(...)              SYS_LOGGER("[LCD_MANG]: "__VA_ARGS__)
+#define gpio_LOG_ERR(...)          SYS_LOGGER_ERR("[LCD_MANG]: "__VA_ARGS__)
+#define gpio_LOG_WRN(...)          SYS_LOGGER_WRN("[LCD_MANG]: "__VA_ARGS__)
+#define gpio_LOG_INFO(...)         SYS_LOGGER_INFO("[LCD_MANG]: "__VA_ARGS__)
+#define gpio_LOG_SUCC(...)         SYS_LOGGER_SUCC("[LCD_MANG]: "__VA_ARGS__)
+#else
+#define gpio_LOG(...)
+#define gpio_LOG_ERR(...)
+#define gpio_LOG_WRN(...)
+#define gpio_LOG_INFO(...)
+#define gpio_LOG_SUCC(...)
+#endif
 
 /************************** FUNCTIONS IMPLEMENTATION **************************/
 
-ErrorStatus  GPIO_SetPortDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Direction)
+ErrorStatus  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction)
 {
 	ErrorStatus Local_error= ES_NOK;
-	if(GPIO_u8PortID < 7)
+	if(GPIO_PortID < 7)
 	{
-		switch(GPIO_u8PortID)
+		switch(GPIO_PortID)
 		{
-			case GPIO_U8_PORT_A: GPIO_U8_DDRA = GPIO_u8Direction; break;
-			case GPIO_U8_PORT_B: GPIO_U8_DDRB = GPIO_u8Direction; break;
-			case GPIO_U8_PORT_C: GPIO_U8_DDRC = GPIO_u8Direction; break;
-			case GPIO_U8_PORT_D: GPIO_U8_DDRD = GPIO_u8Direction; break;
-			case GPIO_U8_PORT_E: GPIO_U8_DDRE = GPIO_u8Direction; break;
-			case GPIO_U8_PORT_F: GPIO_U8_DDRF = GPIO_u8Direction; break;
-			case GPIO_U8_PORT_G: GPIO_U8_DDRG = GPIO_u8Direction; break;
+			case GPIO_PORT_A: GPIO_DDRA = GPIO_Direction; break;
+			case GPIO_PORT_B: GPIO_DDRB = GPIO_Direction; break;
+			case GPIO_PORT_C: GPIO_DDRC = GPIO_Direction; break;
+			case GPIO_PORT_D: GPIO_DDRD = GPIO_Direction; break;
+			case GPIO_PORT_E: GPIO_DDRE = GPIO_Direction; break;
+			case GPIO_PORT_F: GPIO_DDRF = GPIO_Direction; break;
+			case GPIO_PORT_G: GPIO_DDRG = GPIO_Direction; break;
 		}
 		Local_error= ES_OK;
 	}
@@ -32,37 +49,37 @@ ErrorStatus  GPIO_SetPortDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Direction
 	return Local_error;
 }
 /******************************************************************************/
-ErrorStatus  GPIO_SetPinDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Direction)
+ErrorStatus  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Direction)
 {
 	ErrorStatus Local_error= ES_NOK;
-	if((GPIO_u8PortID < 7)&&(GPIO_u8PinID <8))
+	if((GPIO_PortID < 7)&&(GPIO_PinID <8))
 	{
-		if(GPIO_u8Direction==GPIO_U8_OUTPUT)
+		if(GPIO_Direction==GPIO_OUTPUT)
 		{
-			switch(GPIO_u8PortID)
+			switch(GPIO_PortID)
 			{
-				case GPIO_U8_PORT_A: SET_BIT(GPIO_U8_DDRA,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_B: SET_BIT(GPIO_U8_DDRB,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_C: SET_BIT(GPIO_U8_DDRC,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_D: SET_BIT(GPIO_U8_DDRD,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_E: SET_BIT(GPIO_U8_DDRE,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_F: SET_BIT(GPIO_U8_DDRF,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_G: SET_BIT(GPIO_U8_DDRG,GPIO_u8PinID); break;
+				case GPIO_PORT_A: SET_BIT(GPIO_DDRA,GPIO_PinID); break;
+				case GPIO_PORT_B: SET_BIT(GPIO_DDRB,GPIO_PinID); break;
+				case GPIO_PORT_C: SET_BIT(GPIO_DDRC,GPIO_PinID); break;
+				case GPIO_PORT_D: SET_BIT(GPIO_DDRD,GPIO_PinID); break;
+				case GPIO_PORT_E: SET_BIT(GPIO_DDRE,GPIO_PinID); break;
+				case GPIO_PORT_F: SET_BIT(GPIO_DDRF,GPIO_PinID); break;
+				case GPIO_PORT_G: SET_BIT(GPIO_DDRG,GPIO_PinID); break;
 			}
 			
 			}
 			
-			else if(GPIO_u8Direction==GPIO_U8_INPUT)
+			else if(GPIO_Direction==GPIO_INPUT)
 			{
-				switch(GPIO_u8PortID)
+				switch(GPIO_PortID)
 				{
-					case GPIO_U8_PORT_A: CLR_BIT(GPIO_U8_DDRA,GPIO_u8PinID); break;
-					case GPIO_U8_PORT_B: CLR_BIT(GPIO_U8_DDRB,GPIO_u8PinID); break;
-					case GPIO_U8_PORT_C: CLR_BIT(GPIO_U8_DDRC,GPIO_u8PinID); break;
-					case GPIO_U8_PORT_D: CLR_BIT(GPIO_U8_DDRD,GPIO_u8PinID); break;
-					case GPIO_U8_PORT_E: CLR_BIT(GPIO_U8_DDRE,GPIO_u8PinID); break;
-					case GPIO_U8_PORT_F: CLR_BIT(GPIO_U8_DDRF,GPIO_u8PinID); break;
-					case GPIO_U8_PORT_G: CLR_BIT(GPIO_U8_DDRG,GPIO_u8PinID); break;
+					case GPIO_PORT_A: CLR_BIT(GPIO_DDRA,GPIO_PinID); break;
+					case GPIO_PORT_B: CLR_BIT(GPIO_DDRB,GPIO_PinID); break;
+					case GPIO_PORT_C: CLR_BIT(GPIO_DDRC,GPIO_PinID); break;
+					case GPIO_PORT_D: CLR_BIT(GPIO_DDRD,GPIO_PinID); break;
+					case GPIO_PORT_E: CLR_BIT(GPIO_DDRE,GPIO_PinID); break;
+					case GPIO_PORT_F: CLR_BIT(GPIO_DDRF,GPIO_PinID); break;
+					case GPIO_PORT_G: CLR_BIT(GPIO_DDRG,GPIO_PinID); break;
 				}
 				
 			}			
@@ -79,20 +96,20 @@ ErrorStatus  GPIO_SetPinDirection( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint
 	return Local_error;
 }
 /**************************************************************************/
-ErrorStatus  GPIO_SetPortValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Value)
+ErrorStatus  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value)
 {
 	ErrorStatus Local_error= ES_NOK;
-	if(GPIO_u8PortID < 7)
+	if(GPIO_PortID < 7)
 	{
-		switch(GPIO_u8PortID)
+		switch(GPIO_PortID)
 		{
-			case GPIO_U8_PORT_A: GPIO_U8_PORTA =  GPIO_u8Value; break;
-			case GPIO_U8_PORT_B: GPIO_U8_PORTB =  GPIO_u8Value; break;
-			case GPIO_U8_PORT_C: GPIO_U8_PORTC =  GPIO_u8Value; break;
-			case GPIO_U8_PORT_D: GPIO_U8_PORTD =  GPIO_u8Value; break;
-			case GPIO_U8_PORT_E: GPIO_U8_PORTE =  GPIO_u8Value; break;
-			case GPIO_U8_PORT_F: GPIO_U8_PORTF =  GPIO_u8Value; break;
-			case GPIO_U8_PORT_G: GPIO_U8_PORTG =  GPIO_u8Value; break;
+			case GPIO_PORT_A: GPIO_PORTA =  GPIO_Value; break;
+			case GPIO_PORT_B: GPIO_PORTB =  GPIO_Value; break;
+			case GPIO_PORT_C: GPIO_PORTC =  GPIO_Value; break;
+			case GPIO_PORT_D: GPIO_PORTD =  GPIO_Value; break;
+			case GPIO_PORT_E: GPIO_PORTE =  GPIO_Value; break;
+			case GPIO_PORT_F: GPIO_PORTF =  GPIO_Value; break;
+			case GPIO_PORT_G: GPIO_PORTG =  GPIO_Value; break;
 		}
 		Local_error= ES_OK;
 	}
@@ -103,33 +120,33 @@ ErrorStatus  GPIO_SetPortValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8Value)
 	return Local_error;
 }
 /*********************************************************************************************************************/
-ErrorStatus  GPIO_SetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 GPIO_u8Value)
+ErrorStatus  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Value)
 {
 	ErrorStatus Local_error= ES_NOK;
-	if((GPIO_u8PortID < 7)&&(GPIO_u8PinID<8))
+	if((GPIO_PortID < 7)&&(GPIO_PinID<8))
 	{
-		if(GPIO_u8Value==GPIO_U8_HIGH)
-		switch(GPIO_u8PortID)
+		if(GPIO_Value==GPIO_HIGH)
+		switch(GPIO_PortID)
 		{
-			case GPIO_U8_PORT_A: SET_BIT(GPIO_U8_PORTA,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_B: SET_BIT(GPIO_U8_PORTB,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_C: SET_BIT(GPIO_U8_PORTC,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_D: SET_BIT(GPIO_U8_PORTD,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_E: SET_BIT(GPIO_U8_PORTE,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_F: SET_BIT(GPIO_U8_PORTF,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_G: SET_BIT(GPIO_U8_PORTG,GPIO_u8PinID); break;
+			case GPIO_PORT_A: SET_BIT(GPIO_PORTA,GPIO_PinID); break;
+			case GPIO_PORT_B: SET_BIT(GPIO_PORTB,GPIO_PinID); break;
+			case GPIO_PORT_C: SET_BIT(GPIO_PORTC,GPIO_PinID); break;
+			case GPIO_PORT_D: SET_BIT(GPIO_PORTD,GPIO_PinID); break;
+			case GPIO_PORT_E: SET_BIT(GPIO_PORTE,GPIO_PinID); break;
+			case GPIO_PORT_F: SET_BIT(GPIO_PORTF,GPIO_PinID); break;
+			case GPIO_PORT_G: SET_BIT(GPIO_PORTG,GPIO_PinID); break;
 		}
-		else if(GPIO_u8Value==GPIO_U8_LOW)
+		else if(GPIO_Value==GPIO_LOW)
 		{
-			switch(GPIO_u8PortID)
+			switch(GPIO_PortID)
 			{
-				case GPIO_U8_PORT_A: CLR_BIT(GPIO_U8_PORTA,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_B: CLR_BIT(GPIO_U8_PORTB,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_C: CLR_BIT(GPIO_U8_PORTC,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_D: CLR_BIT(GPIO_U8_PORTD,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_E: CLR_BIT(GPIO_U8_PORTE,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_F: CLR_BIT(GPIO_U8_PORTF,GPIO_u8PinID); break;
-				case GPIO_U8_PORT_G: CLR_BIT(GPIO_U8_PORTG,GPIO_u8PinID); break;
+				case GPIO_PORT_A: CLR_BIT(GPIO_PORTA,GPIO_PinID); break;
+				case GPIO_PORT_B: CLR_BIT(GPIO_PORTB,GPIO_PinID); break;
+				case GPIO_PORT_C: CLR_BIT(GPIO_PORTC,GPIO_PinID); break;
+				case GPIO_PORT_D: CLR_BIT(GPIO_PORTD,GPIO_PinID); break;
+				case GPIO_PORT_E: CLR_BIT(GPIO_PORTE,GPIO_PinID); break;
+				case GPIO_PORT_F: CLR_BIT(GPIO_PORTF,GPIO_PinID); break;
+				case GPIO_PORT_G: CLR_BIT(GPIO_PORTG,GPIO_PinID); break;
 			}
 			Local_error= ES_OK;
 		}
@@ -142,27 +159,27 @@ ErrorStatus  GPIO_SetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID,uint_8 G
 	return Local_error;
 }
 /*********************************************************************************************************************/
-uint_8  GPIO_GetPinValue( uint_8 GPIO_u8PortID,uint_8 GPIO_u8PinID)
+uint_8  gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID)
 {
 
-	uint_8 Local_u8value = 0;
-	if((GPIO_u8PortID < 7)&&(GPIO_u8PinID<8))
+	uint_8 Local_value = 0;
+	if((GPIO_PortID < 7)&&(GPIO_PinID<8))
 	{
-		switch(GPIO_u8PortID)
+		switch(GPIO_PortID)
 		{
-			case GPIO_U8_PORT_A: Local_u8value = GET_BIT(GPIO_U8_PINA,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_B: Local_u8value = GET_BIT(GPIO_U8_PINB,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_C: Local_u8value = GET_BIT(GPIO_U8_PINC,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_D: Local_u8value = GET_BIT(GPIO_U8_PIND,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_E: Local_u8value = GET_BIT(GPIO_U8_PINE,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_F: Local_u8value = GET_BIT(GPIO_U8_PINF,GPIO_u8PinID); break;
-			case GPIO_U8_PORT_G: Local_u8value = GET_BIT(GPIO_U8_PING,GPIO_u8PinID); break;
+			case GPIO_PORT_A: Local_value = GET_BIT(GPIO_PINA,GPIO_PinID); break;
+			case GPIO_PORT_B: Local_value = GET_BIT(GPIO_PINB,GPIO_PinID); break;
+			case GPIO_PORT_C: Local_value = GET_BIT(GPIO_PINC,GPIO_PinID); break;
+			case GPIO_PORT_D: Local_value = GET_BIT(GPIO_PIND,GPIO_PinID); break;
+			case GPIO_PORT_E: Local_value = GET_BIT(GPIO_PINE,GPIO_PinID); break;
+			case GPIO_PORT_F: Local_value = GET_BIT(GPIO_PINF,GPIO_PinID); break;
+			case GPIO_PORT_G: Local_value = GET_BIT(GPIO_PING,GPIO_PinID); break;
 		}
 	}
 	else
 	{
 
 	}
-	return Local_u8value;
+	return Local_value;
 	
 }

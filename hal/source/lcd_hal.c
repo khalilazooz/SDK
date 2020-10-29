@@ -4,6 +4,22 @@
 #include "lcd_hal.h"
 #include "debug.h"
 
+#define LCD_LOG_ENABLE
+
+#ifdef LCD_LOG_ENABLE
+#define LCD_LOG(...)              SYS_LOGGER("[LCD_MANG]: "__VA_ARGS__)
+#define LCD_LOG_ERR(...)          SYS_LOGGER_ERR("[LCD_MANG]: "__VA_ARGS__)
+#define LCD_LOG_WRN(...)          SYS_LOGGER_WRN("[LCD_MANG]: "__VA_ARGS__)
+#define LCD_LOG_INFO(...)         SYS_LOGGER_INFO("[LCD_MANG]: "__VA_ARGS__)
+#define LCD_LOG_SUCC(...)         SYS_LOGGER_SUCC("[LCD_MANG]: "__VA_ARGS__)
+#else
+#define LCD_LOG(...)
+#define LCD_LOG_ERR(...)
+#define LCD_LOG_WRN(...)
+#define LCD_LOG_INFO(...)
+#define LCD_LOG_SUCC(...)
+#endif
+
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -50,23 +66,23 @@
 }
 void lcd_command(uint_8 cmnd)
 {
-	GPIO_SetPinValue(LCD_Command_Port,RS ,LOW);
-	GPIO_SetPinValue(LCD_Command_Port,RW ,LOW);
-	GPIO_SetPortValue(LCD_Data_Port ,cmnd);
-	GPIO_SetPinValue(LCD_Command_Port,EN ,HIGH);
+	 gpio_set_pin_value(LCD_Command_Port,RS ,LOW);
+	 gpio_set_pin_value(LCD_Command_Port,RW ,LOW);
+	gpio_set_port_value(LCD_Data_Port ,cmnd);
+	 gpio_set_pin_value(LCD_Command_Port,EN ,HIGH);
 	_delay_ms(2);
-	GPIO_SetPinValue(LCD_Command_Port,EN ,LOW);
+	 gpio_set_pin_value(LCD_Command_Port,EN ,LOW);
 		_delay_ms(2);
 }
 
 void lcd_char(uint_8 char_data)  /* LCD data write function */
 {
-	GPIO_SetPinValue(LCD_Command_Port,RS ,HIGH);/* RS=1 Data reg. */
-	GPIO_SetPinValue(LCD_Command_Port,RW ,LOW);/* RW=0 write operation */
-	GPIO_SetPortValue(LCD_Data_Port ,char_data);
-	GPIO_SetPinValue(LCD_Command_Port,EN ,HIGH);/* Enable Pulse */
+	 gpio_set_pin_value(LCD_Command_Port,RS ,HIGH);/* RS=1 Data reg. */
+	 gpio_set_pin_value(LCD_Command_Port,RW ,LOW);/* RW=0 write operation */
+	gpio_set_port_value(LCD_Data_Port ,char_data);
+	 gpio_set_pin_value(LCD_Command_Port,EN ,HIGH);/* Enable Pulse */
 	_delay_ms(2);
-	GPIO_SetPinValue(LCD_Command_Port,EN ,LOW);
+	 gpio_set_pin_value(LCD_Command_Port,EN ,LOW);
 	_delay_ms(2);/* Data write delay */
 
 }
