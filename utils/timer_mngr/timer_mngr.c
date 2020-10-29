@@ -170,8 +170,27 @@ sint_16 start_timer(tstr_timer_mgmt_ins * timer_inst, uint_16 time_100ms  , void
 	}
 	return SUCCESS;
 }
-sint_16 stop_timer()
+sint_16 stop_timer(tstr_timer_mgmt_ins * timer_inst)
 {
+	if (timer_inst != NULL)
+	{
+		if (timer_exist(&gstr_head,timer_inst))
+		{
+			remove_timer_lst(&gstr_head,timer_inst);
+		}
+	}
+	return SUCCESS;
+}
+
+sint_16 reset_timer(tstr_timer_mgmt_ins * timer_inst)
+{
+	if (timer_inst != NULL)
+	{
+		if (timer_exist(&gstr_head,timer_inst))
+		{
+			timer_inst->u16_timer_100ms_remain = timer_inst->u16_timer_100ms;
+		}
+	}
 	return SUCCESS;
 }
 sint_16 get_time()

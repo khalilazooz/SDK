@@ -44,4 +44,7 @@ void lcd_string_xy (uint_8 row, uint_8 pos, uint_8 *str);
 void lcd_string(uint_8 *str);
 void lcd_char (uint_8 char_data);
 void lcd_command(uint_8 cmnd);
+void lcd_enable_cursor(void);
+void lcd_disable_cursor(void);
+void lcd_goto_xy(uint_8 row, uint_8 pos);
 #endif /* LCD_H_ */

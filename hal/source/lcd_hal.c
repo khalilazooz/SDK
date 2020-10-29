@@ -103,3 +103,21 @@ void lcd_custom_char(uint_8 loc, uint_8 *msg)
 		lcd_char(msg[i]);
 	}
 }
+
+void lcd_enable_cursor(void)
+{
+	lcd_command(0x0F);
+}
+
+void lcd_disable_cursor(void)
+{
+	lcd_command (0x0C);
+}
+
+void lcd_goto_xy(uint_8 row, uint_8 pos)  /* Send string to LCD with xy position */
+{
+	if (row == 0 && pos<16)
+	lcd_command((pos & 0x0F)|0x80);	/* Command of first row and required position<16 */
+	else if (row == 1 && pos<16)
+	lcd_command((pos & 0x0F)|0xC0);
+}	

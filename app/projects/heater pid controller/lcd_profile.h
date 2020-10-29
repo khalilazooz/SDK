@@ -1,11 +1,10 @@
 
-
-#ifndef _TIMER_MGMT_H_
-#define _TIMER_MGMT_H_
+#ifndef _LCD_PROFILE_H_
+#define _LCD_PROFILE_H_
 /***************************************************************/
 /**************             includes               *************/
 /***************************************************************/
-#include "Basictypes.h"
+
 
 /***************************************************************/
 /**************              Macros                *************/
@@ -19,15 +18,7 @@
 /***************************************************************/
 /************         Structure and Unions         *************/
 /***************************************************************/
-typedef struct _tstr_timer_mgmt_ins
-{
-	bool timer_enable ;
-	uint_16 u16_timer_100ms;
-	uint_16 u16_timer_100ms_remain;
-	void(*pf_timer_cb)(void * arg);
-	void * arg_cb ;
-	struct _tstr_timer_mgmt_ins * next;
-}tstr_timer_mgmt_ins;
+
 
 /***************************************************************/
 /**************					Enumes		       *************/
@@ -38,10 +29,9 @@ typedef struct _tstr_timer_mgmt_ins
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
 
-sint_16 start_timer(tstr_timer_mgmt_ins * timer_inst, uint_16 time_100ms  , void(*pf_cb)(void * arg) , void * arg);
-sint_16 reset_timer(tstr_timer_mgmt_ins * timer_inst);
-sint_16 timer_mgmt_init(void);
-#endif /*_TIMER_MGMT_H_*/
+void lcd_profile_init(void);
+
+#endif /*_LCD_PROFILE_H_*/
 
 
 
