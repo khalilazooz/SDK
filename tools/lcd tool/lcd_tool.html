@@ -1,0 +1,74 @@
+<html>
+<head>
+<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+  <script src="js/jquery-1.12.4.js"></script>
+  <script src="js/jquery-ui.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/bootstrap-editable.min.js"></script>
+<link type="text/css" rel="stylesheet" href="css/bootstrap.css"/>
+<link type="text/css" rel="stylesheet" href="css/jquery-ui.css"/>
+<style>
+.remove
+{
+	margin-top: 20px;
+	padding:1px;
+	padding-left:5px;
+	padding-right:5px;
+}
+
+
+</style>
+<script type="text/javascript" src="js/script.js"></script>
+</head>
+<body>
+<div class="draggable-parent border border-light" id="draggable-parent-2" style="max-width: 900px;display:inline-block">
+
+<div  id="ID0" class="card bg-light mb-3 cont" style="max-width: auto;">
+  <div class="card-header"><span class="header">page1</span>
+  <button type="button" class="btn close" style="padding:0px; float:right; disabled">x</button>
+  <input type= "text" value="NULL" class="pstr_prev_page" disabled style="float:right;margin-right: 10px;"/>
+  </div>
+  <div class="card-body">
+	<div class="card">
+	<p><span>time out : </span><input class="time_out" disabled='disabled' type="number" maxlength="4"/><span> x 100ms</span></p>
+	<button type="button" class="btn btn-light addrow">+</button>
+	
+	<table class="datatable">
+		 <tr class="row1">
+			<td style="width: 100px;"><span>Row Data : </span><input style="width: 100px;" class="rowdata" maxlength="14" type= "text"/><td>
+			<td style="width: 100px;">
+			<span>Data Type: </span>
+			<select style="width: 100px;" class="datatype">
+			<option value="p1">DATA</option>
+			<option value="p2">DATA WITH VARIABLE</option>
+			<option value="p3">DATA WITH INPUT</option>
+			<option value="p4">DATA WITH LINK</option>
+			</select>
+			<td>
+			<td style="width: 100px;"><span>In/Var init : </span><input style="width: 100px;" type="number" disabled='disabled' maxlength="4"/><td>
+			<td style="width: 100px;"><span>Next Page : <input disabled="disabled" style="width: 100px;" class="pagelink" type= "text"/><td>
+			<td><button type="button" class="btn btn-danger remove" >remove</button></td>
+		 </tr>
+	</table>
+	</div>
+  </div>
+  <input type="hidden" class="pastr_row_data" value="{&row1}" />
+  <input type="hidden" class="pagename" value="page1" />
+  <input type="hidden" class="u8_rows_num" value="1" />
+  <input type="hidden" class="u16_time_out" value="0" />
+  <input type="hidden" class="pstr_prev_page" value="NULL" />
+</div>
+
+
+
+</div>
+<div class="code" style="float:right;min-height:100%;width:445px; border:1px solid #333; position:initial; display:inline-block;text-align: center;">
+<td style="max-width: 200px;"><button type="button" class="btn btn-success generate" >Generate</button></td>
+<pre>
+<code style="text-align: left;">
+
+</code>
+</pre>
+</div>
+</body>
+</html>

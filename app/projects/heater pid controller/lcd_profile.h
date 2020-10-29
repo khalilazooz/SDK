@@ -30,7 +30,7 @@
 /***************************************************************/
 
 void lcd_profile_init(void);
-
+void lcd_profile_dispatch(void);
 #endif /*_LCD_PROFILE_H_*/
 
 

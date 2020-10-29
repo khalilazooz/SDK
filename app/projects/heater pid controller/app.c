@@ -66,5 +66,4 @@ void app_dispatch(void)
 		SYS_LOGGER("%d\r\n",data);
 	}
 	
-	lcd_mangr_dispatch();
 }
