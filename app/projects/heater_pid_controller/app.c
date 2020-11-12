@@ -7,7 +7,7 @@
 #include "timer_mngr.h"
 #include "flash.h"
 #include "lcd_profile.h"
-#include <avr/io.h>
+#include "lcd_hal.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -46,12 +46,13 @@ void t_cb2(void *arg)
 
 void app_init(void)
 {
-	DDRB = 0xff;
 	uint_16 data = 2056;
+	timer_mgmt_init();
 	lcd_profile_init();
 	flash_init();
+	
 	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
-	timer_mgmt_init();
+	
 	start_timer(&timer1,50,t_cb1 , NULL);
 	start_timer(&timer2,30,t_cb2 , NULL);
 }

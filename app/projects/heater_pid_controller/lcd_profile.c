@@ -24,7 +24,7 @@ tstr_row_data row1 = {
 tstr_row_data row2 = {
 	.u8_id = 1,
 	.au8_data="PV      ",
-	.enu_data_type = DATA_WITH_VARIABLE,
+	.enu_data_type = DATA_WITH_LINK,
 	.u16_var_data = 0,
 	.pstr_next_page = NULL,
 };
@@ -72,7 +72,7 @@ tstr_row_data row5 = {
 tstr_row_data row7 = {
 	.u8_id = 0,
 	.au8_data="SSR",
-	.enu_data_type = DATA,
+	.enu_data_type = DATA_WITH_ACTION,
 	.u16_var_data = 0,
 	.pstr_next_page = NULL,
 };
@@ -80,7 +80,7 @@ tstr_row_data row7 = {
 tstr_row_data row8 = {
 	.u8_id = 1,
 	.au8_data="RLY",
-	.enu_data_type = DATA,
+	.enu_data_type = DATA_WITH_ACTION,
 	.u16_var_data = 0,
 	.pstr_next_page = NULL,
 };
@@ -112,7 +112,7 @@ tstr_row_data row17 = {
 tstr_row_data row11 = {
 	.u8_id = 0,
 	.au8_data="ON            ",
-	.enu_data_type = DATA,
+	.enu_data_type = DATA_WITH_ACTION,
 	.u16_var_data = 0,
 	.pstr_next_page = NULL,
 };
@@ -120,8 +120,8 @@ tstr_row_data row11 = {
 tstr_row_data row12 = {
 	.u8_id = 1,
 	.au8_data="OFF           ",
-	.enu_data_type = DATA,
-	.u16_var_data = 0,
+	.enu_data_type = DATA_WITH_ACTION,
+	.u16_var_data = 1,
 	.pstr_next_page = NULL,
 };
 
@@ -175,11 +175,14 @@ tstr_lcd_mangr_inst Page2 = {
 const tstr_row_data * a_Page3_rows[]= {&row5};
 
 tstr_lcd_mangr_inst Page3 = {
+#ifdef LCD_PASSWORD_ENABLE
+.enu_page_type = NEED_PASS_PAGE,
+#endif
 .pastr_row_data = (tstr_row_data **)a_Page3_rows,
 .u8_rows_num = 1,
 .u8_row_idx = 0,
 .u16_time_out = 200,
-.pstr_prev_page = &  Page2 ,
+.pstr_prev_page = & Page2 ,
 };
 
 
@@ -187,6 +190,7 @@ const tstr_row_data * a_Page4_rows[]= {&row7,&row8};
 
 tstr_lcd_mangr_inst Page4 = {
 .pastr_row_data = (tstr_row_data **)a_Page4_rows,
+.enu_page_type = CHOOSE_PAGE ,
 .u8_rows_num = 2,
 .u8_row_idx = 0,
 .u16_time_out = 200,
@@ -208,6 +212,7 @@ tstr_lcd_mangr_inst Page5 = {
 const tstr_row_data * a_Page6_rows[]= {&row11,&row12};
 
 tstr_lcd_mangr_inst Page6 = {
+.enu_page_type = CHOOSE_PAGE ,
 .pastr_row_data = (tstr_row_data **)a_Page6_rows,
 .u8_rows_num = 2,
 .u8_row_idx = 0,
@@ -226,7 +231,11 @@ tstr_lcd_mangr_inst Page7 = {
 .pstr_prev_page = &  Page5 ,
 };
 
-
+tstr_lcd_mangr_inst passpage = {
+#ifdef LCD_PASSWORD_ENABLE
+	.enu_page_type = CHANGE_PASS_PAGE,
+#endif
+};
 
 /***************************************************************/
 /**************            Static Variable         *************/
@@ -257,7 +266,9 @@ void lcd_profile_init(void){
 	row9.pstr_next_page = &Page5;
 	row10.pstr_next_page = &Page6;
 	row13.pstr_next_page = &Page7;
+	row2.pstr_next_page = &passpage;
 	lcd_mangr_init(&page1);
+	lcd_mangr_battery_charging(TRUE);
 }
 
 void lcd_profile_dispatch(void)
