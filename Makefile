@@ -75,7 +75,7 @@ all: $(OUTPUT_PATH) $(PROJECT_NAME)
 
 
 $(PROJECT_NAME): $(OBJECTS) 
-	@echo "Generating... $(PROJECT_NAME).elf and $(PROJECT_NAME).hex files"
+	@echo "Generating... $(PROJECT_NAME).map, $(PROJECT_NAME).elf and $(PROJECT_NAME).hex files"
 	@$(CC) -Wl,-Map,$(OUTPUT_PATH)/$(PROJECT_NAME).map -mmcu=$(MMCU) -o $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OBJECTS) $(HEADER)
 	@avr-objcopy -O ihex -R .eeprom -R .fuse -R .lock -R .signature  $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OUTPUT_PATH)/$(PROJECT_NAME).hex
 
@@ -108,6 +108,9 @@ endif
 
 $(OUTPUT_PATH):
 	mkdir $@
+
+flash:
+	@echo "Not added now"
 
 clean:
 	@echo "Clean....."
