@@ -34,8 +34,9 @@ endif
 CFLAG = -funsigned-char -funsigned-bitfields
 #************************** SOURCE PATH AND OUTPUT PATH****************
 
-OUTPUT_PATH = ./output
+OUTPUT_PATH = output
 PROJECT_PATH = ./
+
 
 #************************* BUILDING FLAGS****************************
 CFLAG +=-D$(MCU)
@@ -70,15 +71,15 @@ OBJECTS := $(addprefix $(OUTPUT_PATH)/,$(notdir $(CFILES:%.c=%.o)))
 #$(info $(CFILES))
 
 
-all: $(PROJECT_NAME)
+all: $(OUTPUT_PATH) $(PROJECT_NAME) 
 
 
-$(PROJECT_NAME): $(OBJECTS)
-	@echo "Generating... $(PROJECT_NAME).elf file"
+$(PROJECT_NAME): $(OBJECTS) 
+	@echo "Generating... $(PROJECT_NAME).elf and $(PROJECT_NAME).hex files"
 	@$(CC) -Wl,-Map,$(OUTPUT_PATH)/$(PROJECT_NAME).map -mmcu=$(MMCU) -o $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OBJECTS) $(HEADER)
 	@avr-objcopy -O ihex -R .eeprom -R .fuse -R .lock -R .signature  $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OUTPUT_PATH)/$(PROJECT_NAME).hex
 
-$(OUTPUT_PATH)/%.o: $(PROJECT_PATH)common/%.c
+$(OUTPUT_PATH)/%.o: $(PROJECT_PATH)common/%.c 
 	@echo "Compiling... $<"
 	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
 	
@@ -104,6 +105,9 @@ $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)app/projects/heater_pid_controller/%.c
 	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
 endif
 
+
+$(OUTPUT_PATH):
+	mkdir $@
 
 clean:
 	@echo "Clean....."
