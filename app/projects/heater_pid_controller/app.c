@@ -36,6 +36,7 @@ void t_cb1(void *arg)
 void t_cb2(void *arg)
 {
 	b_done = TRUE;
+	PORTB = 0xff;
 }
 
 /***************************************************************/

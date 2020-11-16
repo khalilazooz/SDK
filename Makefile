@@ -31,7 +31,7 @@ DEBUG :=DEBUGGING_DISABLE
 endif
 
 
-CFLAG = -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF
+CFLAG = -funsigned-char -funsigned-bitfields
 #************************** SOURCE PATH AND OUTPUT PATH****************
 
 OUTPUT_PATH = ./output
@@ -74,36 +74,37 @@ all: $(PROJECT_NAME)
 
 
 $(PROJECT_NAME): $(OBJECTS)
-	@echo "Generating... $(PROJECT_NAME).hex file"
-	@$(CC) -Wl,-Map,$(OUTPUT_PATH)/$(PROJECT_NAME).map -mmcu=$(MMCU) -o $(OUTPUT_PATH)/$(PROJECT_NAME).hex $(OBJECTS) $(HEADER)
+	@echo "Generating... $(PROJECT_NAME).elf file"
+	@$(CC) -Wl,-Map,$(OUTPUT_PATH)/$(PROJECT_NAME).map -mmcu=$(MMCU) -o $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OBJECTS) $(HEADER)
+	@avr-objcopy -O ihex -R .eeprom -R .fuse -R .lock -R .signature  $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OUTPUT_PATH)/$(PROJECT_NAME).hex
 
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)common/%.c
 	@echo "Compiling... $<"
-	@$(CC) -c $(CFLAG) $(HEADER) -mmcu=$(MMCU) $< -o $@
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
 	
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/debug/%.c
 	@echo "Compiling... $<"
-	@$(CC) -c $(CFLAG) $(HEADER) -mmcu=$(MMCU) $< -o $@
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
 
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/lcd_mngr/%.c
 	@echo "Compiling... $<"
-	@$(CC) -c $(CFLAG) $(HEADER) -mmcu=$(MMCU) $< -o $@
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
 
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/timer_mngr/%.c
 	@echo "Compiling... $<"
-	@$(CC) -c $(CFLAG) $(HEADER) -mmcu=$(MMCU)  $< -o $@
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU)  $< -o $@
 
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)hal/source/%.c
 	@echo "Compiling... $<"
-	@$(CC) -c $(CFLAG) $(HEADER) -mmcu=$(MMCU) $< -o $@
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
 
 ifeq ($(PROJECT_NAME), heater_pid_system)
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)app/projects/heater_pid_controller/%.c
 	@echo "Compiling... $<"
-	@$(CC) -c $(CFLAG) $(HEADER) -mmcu=$(MMCU) $< -o $@
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
 endif
 
 
 clean:
 	@echo "Clean....."
-	@rm -f $(OBJECTS) $(OUTPUT_PATH)/$(PROJECT_NAME).hex $(OUTPUT_PATH)/$(PROJECT_NAME).map
+	@rm -rf $(OBJECTS) $(OUTPUT_PATH)/$(PROJECT_NAME).hex $(OUTPUT_PATH)/$(PROJECT_NAME).map
