@@ -3,6 +3,7 @@
 /***************************************************************/
 #include "flash.h"
 #include "debug.h"
+#include "common.h"
 #include <util/delay.h>
 /***************************************************************/
 /**************              Macros                *************/
@@ -123,7 +124,7 @@ sint_16 flash_init(void)
 	if (!gb_flash_init)
 	{
 		gb_flash_init = TRUE;
-		memset((void *)pu16_data_exist_location,0,(uint_16)INVALID_SAVED_DATA);
+		MEMSET((void *)pu16_data_exist_location,0,(uint_16)INVALID_SAVED_DATA);
 	}
 	return SUCCESS;
 }

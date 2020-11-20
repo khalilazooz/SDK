@@ -38,7 +38,7 @@
 static tstr_lcd_mangr_inst * apstr_lcd_mangr[MAX_NUM_OF_PAGES] ;
 static uint_16 gu16_page_indx = 0;
 
-static tstr_lcd_mangr_inst str_lcd_mang_current_active;
+//static tstr_lcd_mangr_inst str_lcd_mang_current_active;
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
 /***************************************************************/
@@ -52,8 +52,8 @@ void lcd_mngr_add_page(tstr_lcd_mangr_inst * str_lcd_mangr_inst ,uint_8  row1_da
 	if(gu16_page_indx < MAX_NUM_OF_PAGES)
 	{
 		apstr_lcd_mangr[gu16_page_indx] = str_lcd_mangr_inst;
-		memcpy((void *) str_lcd_mangr_inst->au8_row1,(const void *) row1_data ,16);
-		memcpy((void *)str_lcd_mangr_inst->au8_row2,(const void *)row2_data ,16);
+		MEMCPY((void *) str_lcd_mangr_inst->au8_row1,(const void *) row1_data ,16);
+		MEMCPY((void *)str_lcd_mangr_inst->au8_row2,(const void *)row2_data ,16);
 		str_lcd_mangr_inst->enu_row1_data_type = row1_data_type ;
 		str_lcd_mangr_inst->enu_row2_data_type = row2_data_type ;
 		str_lcd_mangr_inst->u16_row1_input_data = row1_input_data ;
