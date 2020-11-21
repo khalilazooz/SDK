@@ -34,7 +34,7 @@ volatile bool gb_error_handle = FALSE;
 /***************************************************************/
 /**************      Interrupt Handler function    *************/
 /***************************************************************/
-ISR(USART0__UDRE_vect) {
+ISR(USART0_UDRE_vect) {
 	if (tx_buffer_pos < tx_bytes && gb_error_handle == FALSE) {
 		UDR0 = tx_buffer[(tx_buffer_pos++ & 0x03)];
 	}
