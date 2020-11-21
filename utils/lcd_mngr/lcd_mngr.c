@@ -39,13 +39,13 @@
 #define MIN(a,b) ((a>b)?(b):(a))
 
 #define IDLE_CODE			0
-#define UP_BUTTON			GET_BIT(PINF,0)
+#define UP_BUTTON			GET_BIT(PING,0)
 #define UP_CODE				1	
-#define DOWN_BUTTON			GET_BIT(PINF,1)	
+#define DOWN_BUTTON			GET_BIT(PING,1)
 #define DOWN_CODE			2
-#define OK_BUTTON			GET_BIT(PINF,2)	
+#define OK_BUTTON			GET_BIT(PING,2)
 #define SELECT_CODE			3
-#define BACK_BUTTON			GET_BIT(PINF,3)
+#define BACK_BUTTON			GET_BIT(PING,3)
 #define BACK_CODE			4
 /***************************************************************/
 /**************            Global Variable         *************/
@@ -163,8 +163,7 @@ sint_16 lcd_mangr_init(tstr_lcd_mangr_inst * pstr_lcd_header_page)
 			gpstr_default_lcd_page = pstr_lcd_header_page;
 			gpstr_current_lcd_page = gpstr_default_lcd_page;
 			lcd_mangr_update(TRUE);
-			DDRF = 0x00;
-			PINF = 0x00;
+			DDRG = 0x00;
 			timer_mgmt_init();
 			start_timer(&str_screen_light_off_timeout,SCREEN_LIGHT_OFF_TIMEOUT,lcd_mangr_screen_light_off_timeout_cb,NULL);
 			start_timer(&str_screen_data_off_timeout,SCREEN_DATA_OFF_TIMEOUT,lcd_mangr_screen_data_off_timeout_cb,NULL);
