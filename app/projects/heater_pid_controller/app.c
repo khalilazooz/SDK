@@ -6,6 +6,7 @@
 #include "debug.h"
 #include "timer_mngr.h"
 #include "flash.h"
+#include "lcd_profile.h"
 #include <avr/io.h>
 #include "adc.h"
 /***************************************************************/
@@ -26,6 +27,7 @@
 
 static tstr_timer_mgmt_ins timer1;
 static tstr_timer_mgmt_ins timer2;
+
 bool b_done = FALSE;
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
@@ -54,6 +56,7 @@ void app_init(void)
 
 	uint_16 data = 2056;
 	SYS_LOGGER("adc_init %d\r\n",adc_init(F_CPU_DIV_128_MODE));
+	lcd_profile_init();
 	flash_init();
 	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
 	timer_mgmt_init();
@@ -75,4 +78,5 @@ void app_dispatch(void)
 		SYS_LOGGER("%d\r\n",data);
 	}
 	adc_dispatch();
+	lcd_profile_dispatch();
 }
