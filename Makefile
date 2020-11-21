@@ -25,13 +25,13 @@ MMCU=atmega128
 endif
 
 ifeq ($(BUILD_TYPE), debug)
-DEBUG :=DEBUGGING_ENABLE
+DEBUG :=DEBUG_ENABLE
 else
-DEBUG :=DEBUGGING_DISABLE
+DEBUG :=DEBUG_DISABLE
 endif
 
 
-CFLAG = -funsigned-char -funsigned-bitfields
+CFLAG = -funsigned-char -funsigned-bitfields -nostartfiles -lm
 #************************** SOURCE PATH AND OUTPUT PATH****************
 
 OUTPUT_PATH = output
@@ -51,12 +51,13 @@ HEADER += -I$(PROJECT_PATH)hal/include/boards
 HEADER += -I$(PROJECT_PATH)utils/debug
 HEADER += -I$(PROJECT_PATH)utils/lcd_mngr
 HEADER += -I$(PROJECT_PATH)utils/timer_mngr
-
+HEADER += -I$(PROJECT_PATH)utils/queue
 #***************************** C FILE SOURCE ******************
 C_SOURCE_PATHS  += $(PROJECT_PATH)common
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/debug
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/lcd_mngr
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/timer_mngr
+C_SOURCE_PATHS  += $(PROJECT_PATH)utils/queue
 C_SOURCE_PATHS  += $(PROJECT_PATH)hal/source
 
 ifeq ($(PROJECT_NAME), heater_pid_system)
@@ -94,6 +95,12 @@ $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/lcd_mngr/%.c
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/timer_mngr/%.c
 	@echo "Compiling... $<"
 	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU)  $< -o $@
+
+$(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/queue/%.c
+	@echo "Compiling... $<"
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
+
+
 
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)hal/source/%.c
 	@echo "Compiling... $<"
