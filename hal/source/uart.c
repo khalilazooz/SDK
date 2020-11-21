@@ -3,7 +3,7 @@
 /***************************************************************/
 #include <avr/interrupt.h>
 #include "gpio.h"
-
+#include "common.h"
 #include "uart.h"
 /***************************************************************/
 /**************              Macros                *************/
@@ -44,7 +44,6 @@ ISR(USART0_UDRE_vect) {
 		tx_buffer_pos = 0;
 		gb_error_handle = FALSE;
 	}
-	PORTB = 0xFF;
 }
 #ifdef UART_RECEIVE_ENABLE
 ISR(USART0__RX_vect) {

@@ -4,7 +4,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "timer.h"
-
+#include "common.h"
 #include "debug.h"
 /***************************************************************/
 /**************              Macros                *************/
