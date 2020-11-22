@@ -32,19 +32,23 @@ bool b_done = FALSE;
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
 /***************************************************************/
+
+static void adc_cb(uint_16 data)
+{
+	SYS_LOGGER("data :: %d\r\n" , data);
+}
+
+
 void t_cb1(void *arg)
 {
-	
+	SYS_LOGGER("adc_read %d\r\n",adc_read(adc_cb , ADC_CHANNEL_0));
 }
 void t_cb2(void *arg)
 {
 	b_done = TRUE;
 	PORTB = 0xff;
 }
-static void adc_cb(uint_16 data)
-{
-	SYS_LOGGER("data :: %d\r\n" , data);
-}
+
 
 /***************************************************************/
 /**************    Global APIs Impelementation     *************/
@@ -60,7 +64,7 @@ void app_init(void)
 	flash_init();
 	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
 	timer_mgmt_init();
-	start_timer(&timer1,50,t_cb1 , NULL);
+	start_timer(&timer1,51,t_cb1 , NULL);
 	start_timer(&timer2,30,t_cb2 , NULL);
 
 
