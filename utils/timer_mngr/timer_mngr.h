@@ -39,6 +39,7 @@ typedef struct _tstr_timer_mgmt_ins
 /***************************************************************/
 
 sint_16 start_timer(tstr_timer_mgmt_ins * timer_inst, uint_16 time_100ms  , void(*pf_cb)(void * arg) , void * arg);
+sint_16 reset_timer(tstr_timer_mgmt_ins * timer_inst);
 sint_16 timer_mgmt_init(void);
 #endif /*_TIMER_MGMT_H_*/
 

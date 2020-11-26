@@ -25,13 +25,13 @@ MMCU=atmega128
 endif
 
 ifeq ($(BUILD_TYPE), debug)
-DEBUG :=DEBUGGING_ENABLE
+DEBUG :=DEBUG_ENABLE
 else
-DEBUG :=DEBUGGING_DISABLE
+DEBUG :=DEBUG_DISABLE
 endif
 
 
-CFLAG = -funsigned-char -funsigned-bitfields
+CFLAG = -funsigned-char -funsigned-bitfields -nostartfiles -lm
 #************************** SOURCE PATH AND OUTPUT PATH****************
 
 OUTPUT_PATH = output
@@ -52,11 +52,13 @@ HEADER += -I$(PROJECT_PATH)utils/debug
 HEADER += -I$(PROJECT_PATH)utils/lcd_mngr
 HEADER += -I$(PROJECT_PATH)utils/timer_mngr
 HEADER += -I$(PROJECT_PATH)mcal/include
+HEADER += -I$(PROJECT_PATH)utils/queue
 #***************************** C FILE SOURCE ******************
 C_SOURCE_PATHS  += $(PROJECT_PATH)common
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/debug
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/lcd_mngr
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/timer_mngr
+C_SOURCE_PATHS  += $(PROJECT_PATH)utils/queue
 C_SOURCE_PATHS  += $(PROJECT_PATH)hal/source
 C_SOURCE_PATHS  += $(PROJECT_PATH)mcal/source
 
@@ -72,7 +74,7 @@ OBJECTS := $(addprefix $(OUTPUT_PATH)/,$(notdir $(CFILES:%.c=%.o)))
 #$(info $(CFILES))
 
 
-all: $(OUTPUT_PATH) $(PROJECT_NAME) 
+all: $(OUTPUT_PATH) $(PROJECT_NAME) size
 
 
 $(PROJECT_NAME): $(OBJECTS) 
@@ -95,6 +97,12 @@ $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/lcd_mngr/%.c
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/timer_mngr/%.c
 	@echo "Compiling... $<"
 	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU)  $< -o $@
+
+$(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/queue/%.c
+	@echo "Compiling... $<"
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
+
+
 
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)hal/source/%.c
 	@echo "Compiling... $<"
@@ -121,4 +129,9 @@ flash:
 
 clean:
 	@echo "Clean....."
-	@rm -rf $(OBJECTS) $(OUTPUT_PATH)/$(PROJECT_NAME).hex $(OUTPUT_PATH)/$(PROJECT_NAME).map
+	@rm -rf $(OBJECTS) $(OUTPUT_PATH)/$(PROJECT_NAME).hex $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OUTPUT_PATH)/$(PROJECT_NAME).map
+	
+	
+	
+size: 
+	@avr-size -B $(OUTPUT_PATH)/$(PROJECT_NAME).elf
