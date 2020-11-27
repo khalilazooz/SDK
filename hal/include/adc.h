@@ -17,7 +17,7 @@
 /**************       Global Extern Variables      *************/
 /***************************************************************/
 
-typedef void (*tpf_adc_read_cb)(uint_16);
+typedef void (*tpf_adc_read_cb)(void *,uint_16,uint_16);
 /***************************************************************/
 /**************					Enumes		       *************/
 /***************************************************************/
@@ -46,6 +46,7 @@ typedef enum _tenu_adc_channel
 	ADC_CHANNEL_5,
 	ADC_CHANNEL_6,
 	ADC_CHANNEL_7,
+	ADC_INVALID_CHANNEL,
 	ADC_BANDGAP_1_22_V = 0x1E,
 }tenu_adc_channel;
 
@@ -57,8 +58,9 @@ typedef enum _tenu_adc_channel
 
 typedef struct _tstr_adc_element
 {
-	tpf_adc_read_cb pf_adc_read_cb;
 	tenu_adc_channel enu_adc_channel;
+	tpf_adc_read_cb pf_adc_read_cb;
+	void * arg_cb ;
 }tstr_adc_element;
 
 
@@ -70,7 +72,7 @@ typedef struct _tstr_adc_element
 
 sint_16 adc_init(tenu_adc_prescaler_mode enu_adc_pre);
 sint_16 adc_set_prescaler(tenu_adc_prescaler_mode enu_adc_pre);
-sint_16 adc_read(tpf_adc_read_cb pf_adc_read_cb , tenu_adc_channel enu_adc_channel);
+sint_16 adc_read(tstr_adc_element * str_adc_element);
 sint_16 adc_measure_power_supply(tpf_adc_read_cb pf_adc_read_cb);
 void adc_dispatch(void);
 #endif /*_ADC_H_*/

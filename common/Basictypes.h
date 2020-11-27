@@ -40,6 +40,8 @@
 #define ADC_ERROR_BASE				-300
 
 #define QUEUE_ERROR_BASE			-400
+
+#define HEATER_SESOR_ERROR_BASE		-500
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/

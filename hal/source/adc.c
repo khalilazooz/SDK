@@ -51,9 +51,9 @@ static bool gb_adc_power_update_timer_fire = FALSE ;
 /**************    Local APIs Impelementation     *************/
 /***************************************************************/
 
-static void adc_power_update(uint_16 u16_adc_vcc)
+static void adc_power_update(void *arg,uint_16 u16_adc_vcc_old,uint_16 u16_adc_vcc_new)
 {
-	gu16_adc_vcc = u16_adc_vcc ;
+	gu16_adc_vcc = u16_adc_vcc_new ;
 }
 
 static void adc_power_update_timeout(void * arg)
@@ -91,7 +91,7 @@ static void adc_read_channel(void)
 			{
 				u16_adc_val_mv = (uint_16)((1024.0 * (float) ADC_VBG)/ (float) ADC);
 			}
-			str_adc_element.pf_adc_read_cb(u16_adc_val_mv);
+			str_adc_element.pf_adc_read_cb(str_adc_element.arg_cb,gu16_adc_vcc,u16_adc_val_mv);
 			gu8_num_of_conversion--;
 			if(gu8_num_of_conversion > 0)
 			{
@@ -211,25 +211,22 @@ sint_16 adc_init(tenu_adc_prescaler_mode enu_adc_pre)
 }
 
 
-sint_16 adc_read(tpf_adc_read_cb pf_adc_read_cb , tenu_adc_channel enu_adc_channel)
+sint_16 adc_read(tstr_adc_element * str_adc_element)
 {
 	sint_16 s16_retval = SUCCESS;
-	if(pf_adc_read_cb != NULL && enu_adc_channel <= ADC_CHANNEL_7)
+	if(str_adc_element != NULL && str_adc_element->pf_adc_read_cb != NULL && str_adc_element->enu_adc_channel <= ADC_CHANNEL_7)
 	{
 		if(gb_initialized)
 		{
 			bool b_found = FALSE;
-			tstr_adc_element str_adc_element ;
-			str_adc_element.enu_adc_channel = enu_adc_channel ;
-			str_adc_element.pf_adc_read_cb = pf_adc_read_cb;
-			queue_element_existance(&gstr_adc_queue,(void *)&str_adc_element,&b_found);
+			queue_element_existance(&gstr_adc_queue,(void *)str_adc_element,&b_found);
 			if(!b_found)
 			{
 				if(gu8_num_of_conversion == 0)
 				{
-					adc_start_conversion(enu_adc_channel);
+					adc_start_conversion(str_adc_element->enu_adc_channel);
 				}
-				queue_enqueue(&gstr_adc_queue,(void *)&str_adc_element);
+				queue_enqueue(&gstr_adc_queue,(void *)str_adc_element);
 				gu8_num_of_conversion++;
 			}
 			else
