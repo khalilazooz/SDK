@@ -32,16 +32,17 @@
 #define  WGM1	6
 #define  COM0	4
 #define  COM1	5
-
+#define  FCPU_FREQ        8000000
+#define  CLOCKS				256
 /***************************************************************/
 /**************            Global Variable         *************/
 /***************************************************************/
-uint_8 gint_prs=0;
+static tenu_pwm_prescaler  genu_pwm_prescaler=0;
 
 /***************************************************************/
 /**************            Static Variable         *************/
 /***************************************************************/
-static bool gb_init = FALSE;
+static bool gb_pwm_initialized = FALSE;
 
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
@@ -57,87 +58,100 @@ static bool gb_init = FALSE;
 /**************    Global APIs Impelementation     *************/
 /***************************************************************/
 
-sint_16 pwm_init(uint_16 presc){
-	if(gb_init==FALSE){
-		gpio_set_pin_direction(GPIO_PORT_B,GPIO_PIN4,GPIO_OUTPUT);
-		TCCR0|=1<<WGM1|1<<WGM0;//FAST PWM MODE
-		switch(presc){
-		case 1:
+sint_16 pwm_init(tenu_pwm_prescaler lenu_pwm_prescaler){
+	sint_16 s16_retval = pwm_success;
+	uint_16 u16_pwm_prescaler=0;
+	if(gb_pwm_initialized==FALSE){
+		if(lenu_pwm_prescaler<PWM_ERROR_PRESCALER)
 		{
-			gint_prs=1;
+			switch(lenu_pwm_prescaler){
+			case PWM_1_PRESCALER:
+			{
+				u16_pwm_prescaler=1;
+			}
+			break;
+			case PWM_8_PRESCALER:
+			{
+				u16_pwm_prescaler=8;
+			}
+			break;
+			case PWM_64_PRESCALER:
+			{
+				u16_pwm_prescaler=64;
+			}
+			break;
+			case PWM_256_PRESCALER:
+			{
+				u16_pwm_prescaler=256;
+			}
+			break;
+			case PWM_1024_PRESCALER:
+			{
+				u16_pwm_prescaler=1024;
+			}
+			break;
+			}
+			genu_pwm_prescaler=lenu_pwm_prescaler;
+			uint_16 u16_pwm_freq=0;
+			u16_pwm_freq=FCPU_FREQ/(CLOCKS*u16_pwm_prescaler);//equation
+			PWM_LOG("pwm_freq=%d\r\n",u16_pwm_freq);
+			gb_pwm_initialized=TRUE;
+			gpio_set_pin_direction(GPIO_PORT_B,GPIO_PIN4,GPIO_OUTPUT);
+			TCCR0|=1<<WGM1|1<<WGM0;//FAST PWM MODE
 		}
-		break;
-		case 8:
-		{
-			gint_prs=2;
-		}
-		break;
-		case 64:
-		{
-			gint_prs=3;
-		}
-		break;
-		case 256:
-		{
-			gint_prs=4;
-		}
-		break;
-		case 1024:
-		{
-			gint_prs=5;
-		}
-		break;
-		default:
-		{
+		else{
+			s16_retval = pwm_invaled_presc;
 			PWM_LOG("prescaler out of range");
-			return FALSE;
-		}
-		break;
-
 		}
 
-		uint_16 pwm_freq=0;
-		pwm_freq=31250/presc;
-		PWM_LOG("pwm_freq=%d\r\n",pwm_freq);
-		gb_init=TRUE;
-
-		return SUCCESS;
 	}
-	return FALSE;
+	else{
+		s16_retval = pwm_re_init;
+	}
+	return s16_retval;
 
 }
 
-sint_16  pwm_start(uint_8 OCR){
-	if(gb_init==TRUE){
+sint_16  pwm_start(uint_8 u8_pwm_output){
+	sint_16 s16_retval = pwm_success;
+	if(gb_pwm_initialized==TRUE){
+		if(u8_pwm_output<256 && u8_pwm_output>0){
 		uint_8 duty=0;
-		duty=((1+OCR)/256.0)*100;
-		OCR0=OCR;
-		TCCR0|=gint_prs;
+		duty=((1+u8_pwm_output)/256.0)*100;//equation
+		OCR0=u8_pwm_output;
+		TCCR0|=genu_pwm_prescaler;
 		SET_BIT(TCCR0,COM1);
 		CLR_BIT(TCCR0,COM0);//NON INVERTED MODE
 		PWM_LOG("duty=%d\r\n",duty);
-		return SUCCESS;
+	}
+		else
+		{
+		s16_retval=pwm_invaled_output;
+		}
 	}
 
 	else
 	{
-		return FALSE;
+		s16_retval=pwm_not_init;
 	}
+
+return s16_retval;
 }
 
 sint_16 pwm_stop(void){
-	if(gb_init==TRUE){
-	CLR_BIT(TCCR0,COM0);
-	CLR_BIT(TCCR0,COM1);//DISCONNECTED MODE
-	CLR_BIT(TCCR0,0);
-	CLR_BIT(TCCR0,1);
-	CLR_BIT(TCCR0,2);// TIMER NO PRESCALER STOP
-	return SUCCESS;
+	sint_16 s16_retval = pwm_success;
+	if(gb_pwm_initialized==TRUE){
+		CLR_BIT(TCCR0,COM0);
+		CLR_BIT(TCCR0,COM1);//DISCONNECTED MODE
+		CLR_BIT(TCCR0,0);
+		CLR_BIT(TCCR0,1);
+		CLR_BIT(TCCR0,2);// TIMER NO PRESCALER STOP
 	}
 
 	else
 	{
-		return FALSE;
+		s16_retval=pwm_not_init;
 	}
 
-	}
+	return s16_retval;
+}
