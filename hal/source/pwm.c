@@ -116,13 +116,13 @@ sint_16  pwm_start(uint_8 u8_pwm_output){
 	sint_16 s16_retval = pwm_success;
 	if(gb_pwm_initialized==TRUE){
 		if(u8_pwm_output<256 && u8_pwm_output>0){
-		uint_8 duty=0;
-		duty=((1+u8_pwm_output)/256.0)*100;//equation
+		uint_8 u8_duty=0;
+		u8_duty=((1+u8_pwm_output)/256.0)*100;//equation
 		OCR0=u8_pwm_output;
 		TCCR0|=genu_pwm_prescaler;
 		SET_BIT(TCCR0,COM1);
 		CLR_BIT(TCCR0,COM0);//NON INVERTED MODE
-		PWM_LOG("duty=%d\r\n",duty);
+		PWM_LOG("duty=%d\r\n",u8_duty);
 	}
 		else
 		{
