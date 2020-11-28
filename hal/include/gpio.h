@@ -5,7 +5,7 @@
 #include"BIT_MATH.h"
 
 /*******errors macros***/
-#define GPIO_ERROR_BASE					-500
+
 #define GPIO_INVALED_ARGUMENT			GPIO_ERROR_BASE-1
 #define GPIO_NOT_SELECTED				GPIO_ERROR_BASE-2
 #define GPIO_RE_SELECTED				GPIO_ERROR_BASE-3
