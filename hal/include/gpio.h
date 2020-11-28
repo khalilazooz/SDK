@@ -9,7 +9,8 @@
 #define gpio_success						gpio_error_base
 #define gpio_error						gpio_error_base-1
 #define gpio_invaled_argument			gpio_error_base-2
-
+#define gpio_not_selected				gpio_error_base-3
+#define gpio_re_selected				gpio_error_base-4
 /******* PORTS ID ******/
 #define GPIO_PORT_A 0
 #define GPIO_PORT_B 1
