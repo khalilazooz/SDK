@@ -24,10 +24,11 @@
 #endif
 
 
-#define PORT_SELECT(port)			port_select[port]=0xff
-#define PORT_DESELECT(port)			port_select[port]=0x00
-#define PIN_SELECT(port,pin)		SET_BIT(port_select[port],pin)
-#define PIN_DESELECT(port,pin)		CLR_BIT(port_select[port],pin)
+#define PORT_SELECT(port)			gau8_port_select[port]=0xff
+#define PORT_DESELECT(port)			gau8_port_select[port]=0x00
+#define PIN_SELECT(port,pin)		SET_BIT(gau8_port_select[port],pin)
+#define PIN_DESELECT(port,pin)		CLR_BIT(gau8_port_select[port],pin)
+#define PORT_NUMBERS				7
 /***************************************************************/
 /**************            Global Variable         *************/
 /***************************************************************/
@@ -36,7 +37,7 @@
 /***************************************************************/
 /**************            Static Variable         *************/
 /***************************************************************/
-static uint_8 port_select[7]={0};
+static uint_8 gau8_port_select[PORT_NUMBERS]={0};
 
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
@@ -60,7 +61,7 @@ sint_16  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction)
 
 	if(GPIO_PortID < 7)
 	{
-		if(port_select[GPIO_PortID]!=0xff){
+		if(gau8_port_select[GPIO_PortID]!=0xff){
 			PORT_SELECT(GPIO_PortID);
 			switch(GPIO_PortID)
 			{
@@ -88,7 +89,7 @@ sint_16  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPI
 	sint_16 s16_retval = SUCCESS;
 	if((GPIO_PortID < 7)&&(GPIO_PinID <8))
 	{
-		if(!GET_BIT(port_select[GPIO_PortID],GPIO_PinID))
+		if(!GET_BIT(gau8_port_select[GPIO_PortID],GPIO_PinID))
 		{
 			PIN_SELECT(GPIO_PortID,GPIO_PinID);
 
@@ -121,12 +122,14 @@ sint_16  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPI
 				}
 
 			}			
-			else
-			{
-				s16_retval= GPIO_RE_SELECTED;
-			}
 
-		}}
+
+		}
+		else
+					{
+						s16_retval= GPIO_RE_SELECTED;
+					}
+	}
 	else
 	{
 		s16_retval= GPIO_INVALED_ARGUMENT;
@@ -141,7 +144,7 @@ sint_16  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value)
 
 	if(GPIO_PortID < 7)
 	{
-		if(port_select[GPIO_PortID]==0xff){
+		if(gau8_port_select[GPIO_PortID]==0xff){
 			switch(GPIO_PortID)
 			{
 			case GPIO_PORT_A: GPIO_PORTA =  GPIO_Value; break;
@@ -173,7 +176,7 @@ sint_16  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Va
 
 	if((GPIO_PortID < 7)&&(GPIO_PinID<8))
 	{
-		if(GET_BIT(port_select[GPIO_PortID],GPIO_PinID)){
+		if(GET_BIT(gau8_port_select[GPIO_PortID],GPIO_PinID)){
 			if(GPIO_Value==GPIO_HIGH)
 				switch(GPIO_PortID)
 				{
@@ -222,7 +225,7 @@ sint_16 gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8* p)
 	uint_8 Local_value = 0;
 	if((GPIO_PortID < 7)&&(GPIO_PinID<8))
 	{
-		if(GET_BIT(port_select[GPIO_PortID],GPIO_PinID))
+		if(GET_BIT(gau8_port_select[GPIO_PortID],GPIO_PinID))
 		{
 			switch(GPIO_PortID)
 			{
