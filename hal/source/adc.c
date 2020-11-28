@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "queue.h"
 #include "common.h"
+#include "timer_mngr.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -29,8 +30,8 @@
 
 #define ADC_CHANNELS_NUM		9
 
-#define ADC_VCC					5000
-#define ADC_VBG					1100
+#define ADC_POWER_UPDATE_TIME_OUT		100 /*100 * 100ms = 10 sec*/
+#define ADC_VBG							1100
 /***************************************************************/
 /**************            Global Variable         *************/
 /***************************************************************/
@@ -43,9 +44,23 @@ static bool gb_initialized = FALSE;
 static tstr_queue gstr_adc_queue ;
 static tstr_adc_element gastr_adc_channels[ADC_CHANNELS_NUM];
 static uint_8 gu8_num_of_conversion = 0;
+static uint_16 gu16_adc_vcc = 5000;
+static tstr_timer_mgmt_ins gstr_adc_power_update_timer;
+static bool gb_adc_power_update_timer_fire = FALSE ;
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
 /***************************************************************/
+
+static void adc_power_update(uint_16 u16_adc_vcc)
+{
+	gu16_adc_vcc = u16_adc_vcc ;
+}
+
+static void adc_power_update_timeout(void * arg)
+{
+	gb_adc_power_update_timer_fire = TRUE;
+}
+
 static void adc_start_conversion(uint_8 u8_channel)
 {
 	if(GET_BIT(ADCSRA,ADSC)== 0)
@@ -70,11 +85,10 @@ static void adc_read_channel(void)
 			if(str_adc_element.enu_adc_channel != ADC_BANDGAP_1_22_V)
 			{
 
-				u16_adc_val_mv = (uint_16)(((float)ADC / 1024.0) * (float) ADC_VCC);
+				u16_adc_val_mv = (uint_16)(((float)ADC / 1024.0) * (float) gu16_adc_vcc);
 			}
 			else
 			{
-				SYS_LOGGER("ADC = %d",ADC);
 				u16_adc_val_mv = (uint_16)((1024.0 * (float) ADC_VBG)/ (float) ADC);
 			}
 			str_adc_element.pf_adc_read_cb(u16_adc_val_mv);
@@ -176,12 +190,19 @@ sint_16 adc_init(tenu_adc_prescaler_mode enu_adc_pre)
 		 s16_retval = adc_set_prescaler(enu_adc_pre);
 		 if(s16_retval == SUCCESS)
 		 {
+
+			 timer_mgmt_init();
+
+			 start_timer(&gstr_adc_power_update_timer, ADC_POWER_UPDATE_TIME_OUT, adc_power_update_timeout,  NULL);
 			 // AREF = AVcc
 			 ADMUX = (1<<REFS0);
 			 gb_initialized = TRUE;
 
 			 /*ADC init queue for adc channels*/
 			 s16_retval = queue_init(&gstr_adc_queue, (uint_8 *)gastr_adc_channels , ADC_CHANNELS_NUM, sizeof(tstr_adc_element));
+
+			 adc_measure_power_supply(adc_power_update);
+
 
 			 ADC_LOG("ADC INITIALIZED SUCCESSFULY \r\n");
 		 }
@@ -270,5 +291,12 @@ sint_16 adc_measure_power_supply(tpf_adc_read_cb pf_adc_read_cb)
 void adc_dispatch(void)
 {
 	adc_read_channel();
+
+	if(gb_adc_power_update_timer_fire == TRUE)
+	{
+		gb_adc_power_update_timer_fire = FALSE ;
+		adc_measure_power_supply(adc_power_update);
+		start_timer(&gstr_adc_power_update_timer, ADC_POWER_UPDATE_TIME_OUT, adc_power_update_timeout,  NULL);
+	}
 }
 

@@ -72,7 +72,7 @@ OBJECTS := $(addprefix $(OUTPUT_PATH)/,$(notdir $(CFILES:%.c=%.o)))
 #$(info $(CFILES))
 
 
-all: $(OUTPUT_PATH) $(PROJECT_NAME) 
+all: $(OUTPUT_PATH) $(PROJECT_NAME) size
 
 
 $(PROJECT_NAME): $(OBJECTS) 
@@ -121,4 +121,9 @@ flash:
 
 clean:
 	@echo "Clean....."
-	@rm -rf $(OBJECTS) $(OUTPUT_PATH)/$(PROJECT_NAME).hex $(OUTPUT_PATH)/$(PROJECT_NAME).map
+	@rm -rf $(OBJECTS) $(OUTPUT_PATH)/$(PROJECT_NAME).hex $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OUTPUT_PATH)/$(PROJECT_NAME).map
+	
+	
+	
+size: 
+	@avr-size -B $(OUTPUT_PATH)/$(PROJECT_NAME).elf
