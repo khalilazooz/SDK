@@ -56,6 +56,7 @@ static uint_8 port_select[7]={0};
 
 sint_16  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction)
 {
+	sint_16 s16_retval = SUCCESS;
 
 	if(GPIO_PortID < 7)
 	{
@@ -72,19 +73,19 @@ sint_16  gpio_set_port_direction( uint_8 GPIO_PortID,uint_8 GPIO_Direction)
 			case GPIO_PORT_G: GPIO_DDRG = GPIO_Direction; break;
 			}}
 		else{
-			return gpio_re_selected;
+			s16_retval= GPIO_RE_SELECTED;
 		}
 	}
 	else
 	{
-		return gpio_invaled_argument;
+		s16_retval=GPIO_INVALED_ARGUMENT;
 	}
-	return gpio_success;
+	return s16_retval;
 }
 /******************************************************************************/
 sint_16  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Direction)
 {
-
+	sint_16 s16_retval = SUCCESS;
 	if((GPIO_PortID < 7)&&(GPIO_PinID <8))
 	{
 		if(!GET_BIT(port_select[GPIO_PortID],GPIO_PinID))
@@ -122,19 +123,21 @@ sint_16  gpio_set_pin_direction( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPI
 			}			
 			else
 			{
-				return gpio_re_selected;
+				s16_retval= GPIO_RE_SELECTED;
 			}
 
 		}}
 	else
 	{
-		return gpio_invaled_argument;
+		s16_retval= GPIO_INVALED_ARGUMENT;
 	}
-	return gpio_success;
+	return s16_retval;
 }
 /**************************************************************************/
 sint_16  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value)
 {
+
+	sint_16 s16_retval = SUCCESS;
 
 	if(GPIO_PortID < 7)
 	{
@@ -152,19 +155,21 @@ sint_16  gpio_set_port_value( uint_8 GPIO_PortID,uint_8 GPIO_Value)
 
 		}
 		else{
-			return gpio_not_selected;
+			s16_retval=GPIO_NOT_SELECTED;
 		}
 
 	}
 	else
 	{
-		return gpio_invaled_argument;
+		s16_retval=GPIO_INVALED_ARGUMENT;
 	}
-	return gpio_success;
+	return s16_retval;
 }
 /*********************************************************************************************************************/
 sint_16  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Value)
 {
+
+	sint_16 s16_retval = SUCCESS;
 
 	if((GPIO_PortID < 7)&&(GPIO_PinID<8))
 	{
@@ -198,19 +203,21 @@ sint_16  gpio_set_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8 GPIO_Va
 		}
 		else
 		{
-			return gpio_not_selected;
+			s16_retval= GPIO_NOT_SELECTED;
 		}
 
 	}
 	else
 	{
-		return gpio_invaled_argument;
+		s16_retval= GPIO_INVALED_ARGUMENT;
 	}
-	return gpio_success;
+	return s16_retval;
 }
 /*********************************************************************************************************************/
 sint_16 gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8* p)
 {
+
+	sint_16 s16_retval = SUCCESS;
 
 	uint_8 Local_value = 0;
 	if((GPIO_PortID < 7)&&(GPIO_PinID<8))
@@ -231,14 +238,24 @@ sint_16 gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8* p)
 
 		else
 		{
-			return gpio_not_selected;
+			s16_retval= GPIO_NOT_SELECTED;
 		}
 	}
 	else
 	{
-		return gpio_invaled_argument;
+		s16_retval= GPIO_INVALED_ARGUMENT;
 	}
 	*p=Local_value;
-	return gpio_success;
+	return s16_retval;
 
+}
+void gpio_de_selsct_port(uint_8 GPIO_PortID)
+{
+	gpio_set_port_value(GPIO_PortID,GPIO_ALL_LOW);
+	PORT_DESELECT(GPIO_PortID);
+}
+void gpio_select_pin(uint_8 GPIO_PortID,uint_8 GPIO_PinID)
+{
+	gpio_set_pin_value(GPIO_PortID,GPIO_PinID,GPIO_LOW);
+	PIN_DESELECT(GPIO_PortID,GPIO_PinID);
 }
