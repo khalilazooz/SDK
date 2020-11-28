@@ -18,13 +18,10 @@
 #define SREG    *((volatile uint_8*)0X5F) //global interrupt
 
 /*******errors macros***/
-#define pwm_error_base					-600
-#define pwm_success						pwm_error_base
-#define pwm_error						pwm_error_base-1
-#define pwm_invaled_presc			pwm_error_base-2
-#define pwm_not_init				pwm_error_base-3
-#define pwm_re_init				    pwm_error_base-4
-#define pwm_invaled_output			pwm_error_base-5
+#define PWM_INVALID_PARAMETER			(PWM_ERROR_BASE-1)
+#define PWM_INVALID_PRESCALER			(PWM_ERROR_BASE-2)
+#define PWM_NOT_INTIALIZED_YET			(PWM_ERROR_BASE-3)
+
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
@@ -40,7 +37,7 @@ typedef enum  _tenu_pwm_prescaler
 	PWM_256_PRESCALER,
 	PWM_1024_PRESCALER,
 	PWM_EX_CLK_PRESCALER,
-	PWM_ERROR_PRESCALER
+	PWM_INVALID_PRESCALER
 } tenu_pwm_prescaler;
 
 /***************************************************************/
