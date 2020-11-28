@@ -51,7 +51,7 @@ typedef enum  _tenu_pwm_prescaler
 /***************************************************************/
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
-sint_16 pwm_init(uint_16 presc);
+sint_16 pwm_init( tenu_pwm_prescaler lenu_pwm_prescaler);
 sint_16 pwm_start(uint_8 OCR);
 sint_16 pwm_stop(void);
 #endif /*_PWM_H_*/

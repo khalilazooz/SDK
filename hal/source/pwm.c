@@ -59,7 +59,7 @@ static bool gb_pwm_initialized = FALSE;
 /***************************************************************/
 
 sint_16 pwm_init(tenu_pwm_prescaler lenu_pwm_prescaler){
-	sint_16 s16_retval = pwm_success;
+	sint_16 s16_retval = SUCCESS;
 	uint_16 u16_pwm_prescaler=0;
 	if(gb_pwm_initialized==FALSE){
 		if(lenu_pwm_prescaler<PWM_ERROR_PRESCALER)
@@ -105,15 +105,12 @@ sint_16 pwm_init(tenu_pwm_prescaler lenu_pwm_prescaler){
 		}
 
 	}
-	else{
-		s16_retval = pwm_re_init;
-	}
 	return s16_retval;
 
 }
 
 sint_16  pwm_start(uint_8 u8_pwm_output){
-	sint_16 s16_retval = pwm_success;
+	sint_16 s16_retval = SUCCESS;
 	if(gb_pwm_initialized==TRUE){
 		if(u8_pwm_output<256 && u8_pwm_output>0){
 		uint_8 u8_duty=0;
@@ -139,7 +136,7 @@ return s16_retval;
 }
 
 sint_16 pwm_stop(void){
-	sint_16 s16_retval = pwm_success;
+	sint_16 s16_retval = SUCCESS;
 	if(gb_pwm_initialized==TRUE){
 		CLR_BIT(TCCR0,COM0);
 		CLR_BIT(TCCR0,COM1);//DISCONNECTED MODE
