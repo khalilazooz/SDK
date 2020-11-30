@@ -10,6 +10,7 @@
 #include <avr/io.h>
 #include "adc.h"
 #include "heater_sensor.h"
+#include "gpio.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -24,7 +25,7 @@
 /***************************************************************/
 /**************            Static Variable         *************/
 /***************************************************************/
-static float alpha = 0.0003596 ;
+static float alpha = 0.005 ;
 static const tstr_heater_sensor str_heater_sensor1 ={.u8_sensor_idx = 1 ,
 													.u8_adc_channel = 0,
 													.str_heater_sensor_conf =
@@ -32,12 +33,53 @@ static const tstr_heater_sensor str_heater_sensor1 ={.u8_sensor_idx = 1 ,
 														.enu_heater_sensor_type = HEATER_SENSOR_RTD,
 														.uni_sensor_conf.str_rtd =
 														{
-															.u16_resistor_val = 100 ,
+															.u16_resistor_val = 100,
 															.pu16_alpha = &alpha,
-															.pu16_referance_resistor = 1000 ,
+															.pu16_referance_resistor = 10 ,
 														},
 													},
-													.u16_sensor_read_time = 50 ,
+													};
+
+static const tstr_heater_sensor str_heater_sensor2 ={.u8_sensor_idx = 2 ,
+													.u8_adc_channel = 1,
+													.str_heater_sensor_conf =
+													{
+														.enu_heater_sensor_type = HEATER_SENSOR_RTD,
+														.uni_sensor_conf.str_rtd =
+														{
+															.u16_resistor_val = 100,
+															.pu16_alpha = &alpha,
+															.pu16_referance_resistor = 10 ,
+														},
+													},
+													};
+
+static float gs16_beta = -3799.42;
+static uint_16 gu16_resist = 10000;
+static const tstr_heater_sensor str_heater_sensor3 ={.u8_sensor_idx = 3 ,
+													.u8_adc_channel = 2,
+													.str_heater_sensor_conf =
+													{
+														.enu_heater_sensor_type = HEATER_SENSOR_THERMISTOR,
+														.uni_sensor_conf.str_therm =
+														{
+															.u16_therm_beta = &gs16_beta,
+															.u16_resistance_25_degree = &gu16_resist,
+															.u16_referance_resistor = 10000 ,
+														},
+													},
+													};
+
+static const tstr_heater_sensor str_heater_sensor4 ={.u8_sensor_idx = 4 ,
+													.u8_adc_channel = 3,
+													.str_heater_sensor_conf =
+													{
+														.enu_heater_sensor_type = HEATER_SENSOR_THERMOCOUPLE,
+														.uni_sensor_conf.str_tc =
+														{
+															.enu_thermocouple_type = TC_TYPE_E,
+														},
+													},
 													};
 
 static tstr_timer_mgmt_ins timer1;
@@ -47,10 +89,6 @@ bool b_done = FALSE;
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
 /***************************************************************/
-static void heater_sensor_notify(uint_8 u8_sensor_idx,void * pv_data)
-{
-	SYS_LOGGER("id = %d temp = %ld\r\n",u8_sensor_idx,*((uint_32 *)pv_data));
-}
 
 void t_cb1(void *arg)
 {
@@ -59,7 +97,6 @@ void t_cb1(void *arg)
 void t_cb2(void *arg)
 {
 	b_done = TRUE;
-	PORTB = 0xff;
 }
 
 
@@ -71,10 +108,17 @@ void app_init(void)
 {
 	DDRB = 0xff;
 	uint_16 data = 2056;
-
+	uint_32 sensor_data = 0;
 	lcd_profile_init();
-	SYS_LOGGER("%d\r\n",heater_sensor_init(heater_sensor_notify));
-	SYS_LOGGER("%d\r\n",heater_sensor_add(&str_heater_sensor1));
+	SYS_LOGGER("%d\r\n",heater_sensor_init());
+//	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor1, &sensor_data));
+//	SYS_LOGGER("%ld\r\n",sensor_data);
+//	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor2, &sensor_data));
+//	SYS_LOGGER("%ld\r\n",sensor_data);
+//	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor3, &sensor_data));
+//	SYS_LOGGER("%lu\r\n",sensor_data);
+	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor4, &sensor_data));
+	SYS_LOGGER("%lu\r\n",sensor_data);
 	flash_init();
 	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
 	timer_mgmt_init();
@@ -91,6 +135,5 @@ void app_dispatch(void)
 		flash_load(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
 		SYS_LOGGER("%d\r\n",data);
 	}
-	adc_dispatch();
 	lcd_profile_dispatch();
 }

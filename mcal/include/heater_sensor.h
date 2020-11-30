@@ -5,7 +5,6 @@
 /**************             includes               *************/
 /***************************************************************/
 #include "Basictypes.h"
-
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -17,7 +16,7 @@
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
-typedef void (*tpf_heater_sensor_notify)(uint_8,void *);
+
 
 /***************************************************************/
 /**************					Enumes		       *************/
@@ -32,7 +31,13 @@ typedef enum _tenu_heater_sensor_type
 	HEATER_SENSOR_INVALID,
 }tenu_heater_sensor_type;
 
-
+typedef enum _tenu_tc_types
+{
+	TC_TYPE_K	 = 	0 ,
+	TC_TYPE_E	 =  9 ,
+	TC_TYPE_J	 =  18	,
+	TC_INVALID_TYPE
+}tenu_tc_types;
 
 /***************************************************************/
 /************         Structure and Unions         *************/
@@ -51,12 +56,14 @@ typedef struct _tstr_heater_sensor_conf
 		}str_rtd;
 		struct
 		{
-			uint_16		u16_resistor_val;
-			uint_16		resistance_to_tmep;
+			float	*	u16_therm_beta;
+			uint_16	*	u16_resistance_25_degree;
+			uint_16		u16_referance_resistor;
 		}str_therm;
 		struct
 		{
-			uint_16		mvoltage_to_temp;
+
+			tenu_tc_types		enu_thermocouple_type ;
 		}str_tc;
 		struct
 		{
@@ -71,15 +78,14 @@ typedef struct _tstr_heater_sensor
 	uint_8							u8_sensor_idx;
 	uint_8 							u8_adc_channel;
 	tstr_heater_sensor_conf			str_heater_sensor_conf;
-	uint_16 						u16_sensor_read_time;
 }tstr_heater_sensor;
 
 
 /***************************************************************/
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
-sint_16 heater_sensor_init(tpf_heater_sensor_notify pf_heater_sensor_notify);
-sint_16 heater_sensor_add(tstr_heater_sensor const * str_heater_sensor);
+sint_16 heater_sensor_init(void);
+sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 * u32_milli_celsius);
 #endif /*_HEATER_SESOR_*/
 
 

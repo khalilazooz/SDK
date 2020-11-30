@@ -149,10 +149,10 @@ sint_16 queue_element_existance(tstr_queue * str_queue, void * item ,bool * b_fo
 		{
 			if(!queue_is_empty(str_queue))
 			{
-				uint_8 u8_i = 0 ;
-				for(u8_i = 0 ; u8_i< str_queue->u16_capacity ;u8_i=(u8_i+str_queue->u8_element_size))
+				uint_16 u16_i = 0 ;
+				for(u16_i = str_queue->u16_front ; u16_i< str_queue->u16_rear ;u16_i=(u16_i+str_queue->u8_element_size))
 				{
-					if(0==MEMCMP(&str_queue->pu8_queue_array[u8_i] , item,str_queue->u8_element_size))
+					if(0==MEMCMP(&str_queue->pu8_queue_array[u16_i] , item,str_queue->u8_element_size))
 					{
 						*b_found = TRUE;
 						break;

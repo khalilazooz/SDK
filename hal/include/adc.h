@@ -10,14 +10,14 @@
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
-#define ADC_INVALID_ARRGUMENTS			(ADC_ERROR_BASE - 1)
-#define ADC_NOT_INITIALIZED_YET			(ADC_ERROR_BASE - 2)
-#define ADC_LAST_READ_NOT_FINSHED		(ADC_ERROR_BASE - 3)
+#define ADC_INVALID_ARRGUMENTS							(ADC_ERROR_BASE - 1)
+#define ADC_NOT_INITIALIZED_YET							(ADC_ERROR_BASE - 2)
+#define ADC_LAST_READ_NOT_FINSHED						(ADC_ERROR_BASE - 3)
+#define ADC_CANNOT_SET_POWER_LESS_THAN_MIN_POWER		(ADC_ERROR_BASE - 4)
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
 
-typedef void (*tpf_adc_read_cb)(void *,uint_16,uint_16);
 /***************************************************************/
 /**************					Enumes		       *************/
 /***************************************************************/
@@ -56,12 +56,6 @@ typedef enum _tenu_adc_channel
 /************         Structure and Unions         *************/
 /***************************************************************/
 
-typedef struct _tstr_adc_element
-{
-	tenu_adc_channel enu_adc_channel;
-	tpf_adc_read_cb pf_adc_read_cb;
-	void * arg_cb ;
-}tstr_adc_element;
 
 
 
@@ -72,8 +66,9 @@ typedef struct _tstr_adc_element
 
 sint_16 adc_init(tenu_adc_prescaler_mode enu_adc_pre);
 sint_16 adc_set_prescaler(tenu_adc_prescaler_mode enu_adc_pre);
-sint_16 adc_read(tstr_adc_element * str_adc_element);
-sint_16 adc_measure_power_supply(tpf_adc_read_cb pf_adc_read_cb);
+sint_16 adc_measure_power_supply_using_vbg(uint_16 * u16_adc_power_read);
+sint_16 adc_read(tenu_adc_channel enu_channel,uint_16 * u16_adc_avg_read,uint_8 u8_ntimes);
+uint_16 get_reference_voltage(void);
 void adc_dispatch(void);
 #endif /*_ADC_H_*/
 
