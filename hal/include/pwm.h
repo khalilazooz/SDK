@@ -19,8 +19,7 @@
 
 /*******errors macros***/
 #define PWM_INVALID_PARAMETER			(PWM_ERROR_BASE-1)
-#define PWM_INVALID_PRESCALER			(PWM_ERROR_BASE-2)
-#define PWM_NOT_INTIALIZED_YET			(PWM_ERROR_BASE-3)
+#define PWM_NOT_INTIALIZED_YET			(PWM_ERROR_BASE-2)
 
 /***************************************************************/
 /**************       Global Extern Variables      *************/

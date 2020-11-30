@@ -105,7 +105,7 @@ sint_16 pwm_init(tenu_pwm_prescaler lenu_pwm_prescaler)
 		}
 		else
 		{
-			s16_retval = PWM_INVALID_PRESCALER;
+			s16_retval = PWM_INVALID_PARAMETER;
 			PWM_LOG("prescaler out of range");
 		}
 
