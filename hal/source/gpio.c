@@ -257,7 +257,7 @@ void gpio_de_selsct_port(uint_8 GPIO_PortID)
 	gpio_set_port_value(GPIO_PortID,GPIO_ALL_LOW);
 	PORT_DESELECT(GPIO_PortID);
 }
-void gpio_select_pin(uint_8 GPIO_PortID,uint_8 GPIO_PinID)
+void gpio_de_select_pin(uint_8 GPIO_PortID,uint_8 GPIO_PinID)
 {
 	gpio_set_pin_value(GPIO_PortID,GPIO_PinID,GPIO_LOW);
 	PIN_DESELECT(GPIO_PortID,GPIO_PinID);

@@ -5,7 +5,7 @@
 #include"BIT_MATH.h"
 
 /*******errors macros***/
-
+#define GPIO_ERROR_BASE					-500
 #define GPIO_INVALED_ARGUMENT			GPIO_ERROR_BASE-1
 #define GPIO_NOT_SELECTED				GPIO_ERROR_BASE-2
 #define GPIO_RE_SELECTED				GPIO_ERROR_BASE-3
@@ -56,7 +56,7 @@ sint_16  gpio_get_pin_value( uint_8 GPIO_PortID,uint_8 GPIO_PinID,uint_8*p);
 
 void gpio_de_selsct_port(uint_8 GPIO_PortID);
 
-void gpio_select_pin(uint_8 GPIO_PortID,uint_8 GPIO_PinID);
+void gpio_de_select_pin(uint_8 GPIO_PortID,uint_8 GPIO_PinID);
 
 #endif
 
