@@ -50,24 +50,24 @@ typedef struct _tstr_heater_sensor_conf
 	{
 		struct
 		{
-			uint_16		u16_resistor_val;
+			uint_16	*	pu16_resistor_val;
 			float	*	pu16_alpha;
-			uint_16 	pu16_referance_resistor;
+			uint_16 	u16_referance_resistor;
 		}str_rtd;
 		struct
 		{
-			float	*	u16_therm_beta;
-			uint_16	*	u16_resistance_25_degree;
+			float	*	pfloat_therm_beta;
+			uint_16	*	pu16_resistance_25_degree;
 			uint_16		u16_referance_resistor;
 		}str_therm;
 		struct
 		{
-
-			tenu_tc_types		enu_thermocouple_type ;
+			float			* thermocouple_d0 ;
+			tenu_tc_types	* penu_thermocouple_type ;
 		}str_tc;
 		struct
 		{
-			uint_16		mvoltage_to_temp;
+			uint_16	 *	pu16_mvoltage_to_temp;
 		}str_semi;
 	}uni_sensor_conf;
 }tstr_heater_sensor_conf;

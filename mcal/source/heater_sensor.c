@@ -27,7 +27,6 @@
 #endif
 
 
-#define D0(TC_TYPE)							(gadouble_temperture_coefficients[TC_TYPE])
 #define D1(TC_TYPE)							(gadouble_temperture_coefficients[TC_TYPE+1])
 #define D2(TC_TYPE)							(gadouble_temperture_coefficients[TC_TYPE+2])
 #define D3(TC_TYPE)							(gadouble_temperture_coefficients[TC_TYPE+3])
@@ -81,11 +80,8 @@ sint_16 heater_sensor_init(void)
 	sint_16 u16_retval = SUCCESS;
 	if(gb_heater_sensor_init == FALSE)
 	{
-
 			gb_heater_sensor_init = TRUE;
-
 			u16_retval = adc_init(F_CPU_DIV_128_MODE);
-
 	}
 	return u16_retval;
 }
@@ -95,8 +91,8 @@ sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 
 	sint_16 u16_retval = SUCCESS;
 	if(gb_heater_sensor_init == TRUE)
 	{
-		if((str_heater_sensor != NULL) && (str_heater_sensor->u8_sensor_idx != 0) &&
-		   (str_heater_sensor->u8_adc_channel < ADC_INVALID_CHANNEL) && (str_heater_sensor->str_heater_sensor_conf.enu_heater_sensor_type < HEATER_SENSOR_INVALID) )
+		if((str_heater_sensor != NULL) && (str_heater_sensor->u8_adc_channel < ADC_INVALID_CHANNEL)
+				&& (str_heater_sensor->str_heater_sensor_conf.enu_heater_sensor_type < HEATER_SENSOR_INVALID))
 		{
 			*u32_milli_celsius = 0;
 			uint_16 u16_adc_read ;
@@ -110,32 +106,32 @@ sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 
 				{
 					float u16_resistance;
 					float alpha = (*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_alpha));
-					float ref_res = (float)(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_referance_resistor);
-					float zero_res = (float)(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.u16_resistor_val) ;
+					float ref_res = (float)(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.u16_referance_resistor);
+					float zero_res = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_resistor_val)) ;
 					u16_resistance = (((ref_res)*((float)u16_adc_read))/((float)u16_volt_ref - ((float)u16_adc_read)));
-					*(u32_milli_celsius) = (sint_32)(((u16_resistance- zero_res)/(zero_res * alpha))*(1000.0));
+					*(u32_milli_celsius) = (uint_32)(((u16_resistance- zero_res)/(zero_res * alpha))*(1000.0));
 					break;
 				}
 				case HEATER_SENSOR_THERMISTOR:
 				{
 					float u16_resistance;
-					float beta = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.u16_therm_beta));
+					float beta = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.pfloat_therm_beta));
 					float ref_res = (float)(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.u16_referance_resistor);
-					float resistance_25_degree = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.u16_resistance_25_degree));
+					float resistance_25_degree = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.pu16_resistance_25_degree));
 					u16_resistance = (((ref_res)*((float)u16_adc_read))/((float)u16_volt_ref - ((float)u16_adc_read)));
-					SYS_LOGGER("u16_resistance = %d\r\n",(uint_16)u16_resistance);
-					*(u32_milli_celsius) = (sint_32)((((beta*CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))/((LN((float)u16_resistance/resistance_25_degree)*CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))+beta))-CELSIUS_TO_KELVIN(1.0))*1000.0);
+					*(u32_milli_celsius) = (uint_32)((((beta*CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))/((LN((float)u16_resistance/resistance_25_degree)*CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))+beta))-CELSIUS_TO_KELVIN(1.0))*1000.0);
 					break;
 				}
 				case HEATER_SENSOR_THERMOCOUPLE:
 				{
 
-					tenu_tc_types tc_type = (str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_tc.enu_thermocouple_type);
+					tenu_tc_types tc_type = (*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_tc.penu_thermocouple_type));
+					double D0 = (*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_tc.thermocouple_d0));
 					double E = (double)u16_adc_read/THERMOCOUPLE_GAIN ;
-					SYS_LOGGER("ADC_VALUE: %d\r\n",u16_adc_read);
+
 					*(u32_milli_celsius) =
-							(sint_32)((
-							D0(tc_type)+
+							(uint_32)((
+							(D0)+
 							(D1(tc_type) * POW(E,1)) +
 							(D2(tc_type) * POW(E,2)) +
 							(D3(tc_type) * POW(E,3)) +
@@ -148,8 +144,8 @@ sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 
 				}
 				case HEATER_SENSOR_SEMICONDUCTOR:
 				{
-
-
+					float mv_t = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_semi.pu16_mvoltage_to_temp));
+					*(u32_milli_celsius) = (uint_32)(((float)u16_adc_read/mv_t)*1000.0);
 					break;
 				}
 				default :
@@ -169,6 +165,33 @@ sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 
 	return u16_retval;
 }
 
+sint_16 heater_sensor_calibrate(tstr_heater_sensor_conf * str_heater_sensor)
+{
+	sint_16 u16_retval = SUCCESS;
+	switch(str_heater_sensor->enu_heater_sensor_type)
+	{
+		case HEATER_SENSOR_RTD:
+		{
 
+			break;
+		}
+		case HEATER_SENSOR_THERMISTOR:
+		{
 
+			break;
+		}
+		case HEATER_SENSOR_THERMOCOUPLE:
+		{
 
+			break;
+		}
+		case HEATER_SENSOR_SEMICONDUCTOR:
+		{
+
+			break;
+		}
+		default :
+			break;
+	}
+	return u16_retval;
+}

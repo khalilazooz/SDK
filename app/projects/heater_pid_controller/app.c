@@ -26,6 +26,7 @@
 /**************            Static Variable         *************/
 /***************************************************************/
 static float alpha = 0.005 ;
+static uint_16 u16_res_val = 100 ;
 static const tstr_heater_sensor str_heater_sensor1 ={.u8_sensor_idx = 1 ,
 													.u8_adc_channel = 0,
 													.str_heater_sensor_conf =
@@ -33,9 +34,9 @@ static const tstr_heater_sensor str_heater_sensor1 ={.u8_sensor_idx = 1 ,
 														.enu_heater_sensor_type = HEATER_SENSOR_RTD,
 														.uni_sensor_conf.str_rtd =
 														{
-															.u16_resistor_val = 100,
+															.pu16_resistor_val = &u16_res_val,
 															.pu16_alpha = &alpha,
-															.pu16_referance_resistor = 10 ,
+															.u16_referance_resistor = 10 ,
 														},
 													},
 													};
@@ -47,9 +48,9 @@ static const tstr_heater_sensor str_heater_sensor2 ={.u8_sensor_idx = 2 ,
 														.enu_heater_sensor_type = HEATER_SENSOR_RTD,
 														.uni_sensor_conf.str_rtd =
 														{
-															.u16_resistor_val = 100,
+															.pu16_resistor_val = &u16_res_val,
 															.pu16_alpha = &alpha,
-															.pu16_referance_resistor = 10 ,
+															.u16_referance_resistor = 10 ,
 														},
 													},
 													};
@@ -63,13 +64,15 @@ static const tstr_heater_sensor str_heater_sensor3 ={.u8_sensor_idx = 3 ,
 														.enu_heater_sensor_type = HEATER_SENSOR_THERMISTOR,
 														.uni_sensor_conf.str_therm =
 														{
-															.u16_therm_beta = &gs16_beta,
-															.u16_resistance_25_degree = &gu16_resist,
+															.pfloat_therm_beta = &gs16_beta,
+															.pu16_resistance_25_degree = &gu16_resist,
 															.u16_referance_resistor = 10000 ,
 														},
 													},
 													};
 
+static tenu_tc_types tenu_tc_type = TC_TYPE_E;
+static float thermocouple_d0 = 0;
 static const tstr_heater_sensor str_heater_sensor4 ={.u8_sensor_idx = 4 ,
 													.u8_adc_channel = 3,
 													.str_heater_sensor_conf =
@@ -77,7 +80,21 @@ static const tstr_heater_sensor str_heater_sensor4 ={.u8_sensor_idx = 4 ,
 														.enu_heater_sensor_type = HEATER_SENSOR_THERMOCOUPLE,
 														.uni_sensor_conf.str_tc =
 														{
-															.enu_thermocouple_type = TC_TYPE_E,
+															.thermocouple_d0   =  &thermocouple_d0,
+															.penu_thermocouple_type = &tenu_tc_type,
+														},
+													},
+													};
+static uint_16 mv_t = 10;
+
+static const tstr_heater_sensor str_heater_sensor5 ={.u8_sensor_idx = 5 ,
+													.u8_adc_channel = 4,
+													.str_heater_sensor_conf =
+													{
+														.enu_heater_sensor_type = HEATER_SENSOR_SEMICONDUCTOR,
+														.uni_sensor_conf.str_semi =
+														{
+															.pu16_mvoltage_to_temp = &mv_t,
 														},
 													},
 													};
@@ -111,13 +128,15 @@ void app_init(void)
 	uint_32 sensor_data = 0;
 	lcd_profile_init();
 	SYS_LOGGER("%d\r\n",heater_sensor_init());
-//	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor1, &sensor_data));
-//	SYS_LOGGER("%ld\r\n",sensor_data);
-//	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor2, &sensor_data));
-//	SYS_LOGGER("%ld\r\n",sensor_data);
-//	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor3, &sensor_data));
-//	SYS_LOGGER("%lu\r\n",sensor_data);
+	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor1, &sensor_data));
+	SYS_LOGGER("%lu\r\n",sensor_data);
+	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor2, &sensor_data));
+	SYS_LOGGER("%lu\r\n",sensor_data);
+	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor3, &sensor_data));
+	SYS_LOGGER("%lu\r\n",sensor_data);
 	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor4, &sensor_data));
+	SYS_LOGGER("%lu\r\n",sensor_data);
+	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor5, &sensor_data));
 	SYS_LOGGER("%lu\r\n",sensor_data);
 	flash_init();
 	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
