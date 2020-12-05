@@ -38,7 +38,7 @@
 
 #define HEATER_SENSOR_MAX_NUM				(8)
 #define THERM_FOLLOWED_RESISTANCE_DEGREE	(25.0)
-#define CELSIUS_TO_KELVIN(DATA)				(DATA + 273.15)
+#define CELSIUS_TO_KELVIN(DATA)				((DATA) + 273.15)
 
 #define THERMOCOUPLE_GAIN					(1000.0)
 /***************************************************************/
@@ -107,9 +107,9 @@ sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 
 					float u16_resistance;
 					float alpha = (*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_alpha));
 					float ref_res = (float)(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.u16_referance_resistor);
-					float zero_res = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_resistor_val)) ;
+					float res_val = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_resistor_val)) ;
 					u16_resistance = (((ref_res)*((float)u16_adc_read))/((float)u16_volt_ref - ((float)u16_adc_read)));
-					*(u32_milli_celsius) = (uint_32)(((u16_resistance- zero_res)/(zero_res * alpha))*(1000.0));
+					*(u32_milli_celsius) = (uint_32)((((u16_resistance- res_val)/(res_val * alpha))*(1000.0)));
 					break;
 				}
 				case HEATER_SENSOR_THERMISTOR:
@@ -119,7 +119,7 @@ sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 
 					float ref_res = (float)(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.u16_referance_resistor);
 					float resistance_25_degree = (float)(*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.pu16_resistance_25_degree));
 					u16_resistance = (((ref_res)*((float)u16_adc_read))/((float)u16_volt_ref - ((float)u16_adc_read)));
-					*(u32_milli_celsius) = (uint_32)((((beta*CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))/((LN((float)u16_resistance/resistance_25_degree)*CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))+beta))-CELSIUS_TO_KELVIN(1.0))*1000.0);
+					*(u32_milli_celsius) = (uint_32)((((float)(beta*CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))/(float)((LN(u16_resistance/(float)resistance_25_degree)*CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))+beta))-CELSIUS_TO_KELVIN(0.0))*1000.0);
 					break;
 				}
 				case HEATER_SENSOR_THERMOCOUPLE:
@@ -165,29 +165,112 @@ sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 
 	return u16_retval;
 }
 
-sint_16 heater_sensor_calibrate(tstr_heater_sensor_conf * str_heater_sensor)
+
+sint_16 heater_sensor_calibrate(tstr_heater_sensor const * str_heater_sensor ,uint_32 u32_snsr_rd_1 ,uint_32 u32_snsr_rd_2, uint_32 u32_snsr_cal_rd_1,uint_32 u32_snsr_cal_rd_2)
 {
 	sint_16 u16_retval = SUCCESS;
-	switch(str_heater_sensor->enu_heater_sensor_type)
+	switch(str_heater_sensor->str_heater_sensor_conf.enu_heater_sensor_type)
 	{
 		case HEATER_SENSOR_RTD:
 		{
+			/*
+			 * Calculate Sensor Ro Value
+			 * Which Should be in Zero temperature value (u32_snsr_cal_rd_1 -> 0) or (u32_snsr_cal_rd_2 -> 0)
+			 * Rt = Ro(1+(alpha)* t )
+			 * where t = 0
+			 * Rt = Ro
+			 */
+			uint_32 u32_not_zero_cal_temp;
+			uint_32 u32_not_zero_temp;
+			uint_32 u32_zero_temp;
+			if(u32_snsr_cal_rd_1 == 0)
+			{
+				u32_zero_temp			 = u32_snsr_rd_1 ;
+				u32_not_zero_cal_temp	 = u32_snsr_cal_rd_2;
+				u32_not_zero_temp		 = u32_snsr_rd_2;
+			}
+			else if(u32_snsr_cal_rd_2 == 0)
+			{
+				u32_zero_temp			 = u32_snsr_rd_2 ;
+				u32_not_zero_cal_temp	 = u32_snsr_cal_rd_1;
+				u32_not_zero_temp		 = u32_snsr_rd_1;
+			}
+			else
+			{
+				u16_retval = HEATER_SENSOR_NOT_ZERO_RTD_CALIBRATE_ERROR ;
+			}
+			if(u16_retval == SUCCESS)
+			{
+				uint_16 u16_rt ;
+				uint_16 u16_r0	 = *(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_resistor_val);
+				float 	f_alpha	 = *(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_alpha);
+				/*This is measured Rt at not zero temperature*/
+				u16_rt =(uint_16)((float)u16_r0*(1+((f_alpha)*((float)u32_not_zero_temp/1000.0))));
+				/*
+				 * Ro Calibration
+				 */
+				if(u32_zero_temp != 0)
+				{
+					u16_r0 =(uint_16)((float)u16_r0*(1+((f_alpha)*((float)u32_zero_temp/1000.0))));
+					*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_resistor_val) = u16_r0 ;
+				}
+				else
+				{
+					/*
+					 * Do nothing as
+					 * "This Sensor Ro is already Calibrated"
+					 */
+				}
 
+				/*
+				 * alpha Calibration
+				 */
+				f_alpha = (((float)u16_rt - (float)u16_r0)/((float)u16_r0*((float)u32_not_zero_cal_temp/1000.0)));
+				*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_rtd.pu16_alpha) = f_alpha ;
+			}
 			break;
 		}
 		case HEATER_SENSOR_THERMISTOR:
 		{
-
+			if(u32_snsr_cal_rd_1 == 0 || u32_snsr_cal_rd_2 == 0)
+			{
+				/*
+				 * Thermistor should not calibrated on zero degree of temperature
+				 */
+				u16_retval = HEATER_SENSOR_ZERO_THERM_CALIBRATE_ERROR ;
+			}
+			else
+			{
+				/*
+				 * Measuring Beta
+				 * From equation B = Ln(R1/R2) / ((1/T1) - (1/T2))
+				 */
+				float * pfloat_therm_beta =(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.pfloat_therm_beta);
+				uint_16 * pu16_resistance_25_degree =(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_therm.pu16_resistance_25_degree);
+				/*Calculate R1 and R2*/
+				float u16_r1 = (*pu16_resistance_25_degree)*EXP((*pfloat_therm_beta)*((1/CELSIUS_TO_KELVIN((float)u32_snsr_rd_1/1000.0))-(1/CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))));
+				float u16_r2 = (*pu16_resistance_25_degree)*EXP((*pfloat_therm_beta)*((1/CELSIUS_TO_KELVIN((float)u32_snsr_rd_2/1000.0))-(1/CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))));
+				SYS_LOGGER("u16_r1= %d >>> u16_r2 = %d\r\n",(uint_16)u16_r1,(uint_16)u16_r2);
+				/*Calibrate the Beta coefficient and the resistor at 25 degree*/
+				(*pfloat_therm_beta) = (float)(LN(u16_r1/u16_r2)/((1/CELSIUS_TO_KELVIN((float)u32_snsr_cal_rd_1/1000.0))-(1/CELSIUS_TO_KELVIN((float)u32_snsr_cal_rd_2/1000.0))));
+				(*pu16_resistance_25_degree) = (float)(u16_r1*EXP((*pfloat_therm_beta)*((1/CELSIUS_TO_KELVIN(THERM_FOLLOWED_RESISTANCE_DEGREE))-(1/CELSIUS_TO_KELVIN((float)u32_snsr_cal_rd_1/1000.0)))));
+			}
 			break;
 		}
 		case HEATER_SENSOR_THERMOCOUPLE:
 		{
-
+			double * pdouble_d0 = (*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_tc.thermocouple_d0));
+			float double_d0_snsr_rd_1 = (u32_snsr_cal_rd_1-u32_snsr_rd_1)/1000.0;
+			float double_d0_snsr_rd_2 = (u32_snsr_cal_rd_2-u32_snsr_rd_2)/1000.0;
+			float double_d0_avrg = (double_d0_snsr_rd_1 + double_d0_snsr_rd_2)/2;
+			(*pdouble_d0) = (*pdouble_d0) + double_d0_avrg ;
 			break;
 		}
 		case HEATER_SENSOR_SEMICONDUCTOR:
 		{
-
+			/*
+			 * There is not Calibration here
+			 * */
 			break;
 		}
 		default :

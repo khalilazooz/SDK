@@ -11,6 +11,7 @@
 #include "adc.h"
 #include "heater_sensor.h"
 #include "gpio.h"
+#include "common.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -36,7 +37,7 @@ static const tstr_heater_sensor str_heater_sensor1 ={.u8_sensor_idx = 1 ,
 														{
 															.pu16_resistor_val = &u16_res_val,
 															.pu16_alpha = &alpha,
-															.u16_referance_resistor = 10 ,
+															.u16_referance_resistor = 100 ,
 														},
 													},
 													};
@@ -50,7 +51,7 @@ static const tstr_heater_sensor str_heater_sensor2 ={.u8_sensor_idx = 2 ,
 														{
 															.pu16_resistor_val = &u16_res_val,
 															.pu16_alpha = &alpha,
-															.u16_referance_resistor = 10 ,
+															.u16_referance_resistor = 100 ,
 														},
 													},
 													};
@@ -128,15 +129,15 @@ void app_init(void)
 	uint_32 sensor_data = 0;
 	lcd_profile_init();
 	SYS_LOGGER("%d\r\n",heater_sensor_init());
-	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor1, &sensor_data));
-	SYS_LOGGER("%lu\r\n",sensor_data);
-	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor2, &sensor_data));
-	SYS_LOGGER("%lu\r\n",sensor_data);
 	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor3, &sensor_data));
 	SYS_LOGGER("%lu\r\n",sensor_data);
-	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor4, &sensor_data));
-	SYS_LOGGER("%lu\r\n",sensor_data);
-	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor5, &sensor_data));
+	SYS_LOGGER("beta = %d\r\n",(sint_16)gs16_beta);
+	SYS_LOGGER("%d\r\n",heater_sensor_calibrate(&str_heater_sensor3,48005,34756,10000,30000));
+	SYS_LOGGER("beta = %d\r\n",(sint_16)gs16_beta);
+	SYS_LOGGER("gu16_resist = %ld\r\n",(uint_32)gu16_resist);
+
+
+	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor3, &sensor_data));
 	SYS_LOGGER("%lu\r\n",sensor_data);
 	flash_init();
 	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);

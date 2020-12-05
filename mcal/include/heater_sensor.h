@@ -10,9 +10,11 @@
 /***************************************************************/
 
 
-#define HEATER_SESOR_INVALID_ARGUMENT			(HEATER_SESOR_ERROR_BASE-1)
-#define HEATER_SESOR_NOT_INITIALIZED_YET		(HEATER_SESOR_ERROR_BASE-2)
-
+#define HEATER_SESOR_INVALID_ARGUMENT						(HEATER_SESOR_ERROR_BASE-1)
+#define HEATER_SESOR_NOT_INITIALIZED_YET					(HEATER_SESOR_ERROR_BASE-2)
+#define HEATER_SENSOR_IS_AREADY_CALIBRATED_ERROR			(HEATER_SESOR_ERROR_BASE-3)
+#define HEATER_SENSOR_NOT_ZERO_RTD_CALIBRATE_ERROR			(HEATER_SESOR_ERROR_BASE-4)
+#define HEATER_SENSOR_ZERO_THERM_CALIBRATE_ERROR			(HEATER_SESOR_ERROR_BASE-5)
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
@@ -50,7 +52,7 @@ typedef struct _tstr_heater_sensor_conf
 	{
 		struct
 		{
-			uint_16	*	pu16_resistor_val;
+			uint_16	*	pu16_resistor_val;/*100*/
 			float	*	pu16_alpha;
 			uint_16 	u16_referance_resistor;
 		}str_rtd;
@@ -86,6 +88,7 @@ typedef struct _tstr_heater_sensor
 /***************************************************************/
 sint_16 heater_sensor_init(void);
 sint_16 heater_sensor_read(tstr_heater_sensor const * str_heater_sensor,uint_32 * u32_milli_celsius);
+sint_16 heater_sensor_calibrate(tstr_heater_sensor const * str_heater_sensor ,uint_32 u32_snsr_rd_1 ,uint_32 u32_snsr_rd_2, uint_32 u32_snsr_cal_rd_1,uint_32 u32_snsr_cal_rd_2);
 #endif /*_HEATER_SESOR_*/
 
 

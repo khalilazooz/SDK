@@ -106,3 +106,15 @@ float sys_ln(float y)
     result = result + ((float)log2) * LN_2 - LN_SCALING_FACTOR; // Using the log product rule Log(A) + Log(B) = Log(AB) and the log base change rule log_x(A) = log_y(A)/Log_y(x), calculate all the components in base e and then sum them: = Ln(x_remainder) + (log_2(x_integer) * ln(2)) - ln(SCALING_FACTOR)
     return result;
 }
+
+
+float sys_exp(float data)
+{
+    float sum = 1.0f; // initialize sum of series
+    uint_16 n = 100;
+    uint_16 i ;
+    for (i = n - 1; i > 0; --i )
+        sum = 1 + data * sum / i;
+
+    return sum;
+}
