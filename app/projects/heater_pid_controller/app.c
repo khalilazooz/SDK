@@ -7,7 +7,8 @@
 #include "timer_mngr.h"
 #include "flash.h"
 #include "lcd_profile.h"
-#include "lcd_hal.h"
+#include <avr/io.h>
+#include "adc.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -38,6 +39,11 @@ void t_cb1(void *arg)
 void t_cb2(void *arg)
 {
 	b_done = TRUE;
+	PORTB = 0xff;
+}
+static void adc_cb(uint_16 data)
+{
+	SYS_LOGGER("data :: %d\r\n" , data);
 }
 
 /***************************************************************/
@@ -46,15 +52,20 @@ void t_cb2(void *arg)
 
 void app_init(void)
 {
+	DDRB = 0xff;
+
 	uint_16 data = 2056;
-	timer_mgmt_init();
+	SYS_LOGGER("adc_init %d\r\n",adc_init(F_CPU_DIV_128_MODE));
 	lcd_profile_init();
 	flash_init();
-	
 	flash_save(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
-	
+	timer_mgmt_init();
 	start_timer(&timer1,50,t_cb1 , NULL);
 	start_timer(&timer2,30,t_cb2 , NULL);
+
+
+	SYS_LOGGER("adc_measure_power_supply %d\r\n",adc_measure_power_supply(adc_cb));
+	SYS_LOGGER("adc_read %d\r\n",adc_read(adc_cb , ADC_CHANNEL_0));
 }
 
 void app_dispatch(void)
@@ -66,5 +77,6 @@ void app_dispatch(void)
 		flash_load(INTERNAL_EEPROM,TEMPERATURE_SET_POINT,(uint_8 *) &data,2);
 		SYS_LOGGER("%d\r\n",data);
 	}
+	adc_dispatch();
 	lcd_profile_dispatch();
 }

@@ -34,7 +34,7 @@ volatile bool gb_error_handle = FALSE;
 /***************************************************************/
 /**************      Interrupt Handler function    *************/
 /***************************************************************/
-ISR(USART0__UDRE_vect) {
+ISR(USART0_UDRE_vect) {
 	if (tx_buffer_pos < tx_bytes && gb_error_handle == FALSE) {
 		UDR0 = tx_buffer[(tx_buffer_pos++ & 0x03)];
 	}
@@ -44,6 +44,7 @@ ISR(USART0__UDRE_vect) {
 		tx_buffer_pos = 0;
 		gb_error_handle = FALSE;
 	}
+	PORTB = 0xFF;
 }
 #ifdef UART_RECEIVE_ENABLE
 ISR(USART0__RX_vect) {
@@ -112,10 +113,10 @@ sint_16 uart_deinit(void)
 	if(gb_uart_init == TRUE)
 	{
 		gb_uart_init = FALSE;
-		UBRR0H = 0;                     
-		UBRR0L = 0;                          
-		UCSR0B = 0;                
-		UCSR0C = 0;   
+		UBRR0H = 0;
+		UBRR0L = 0;
+		UCSR0B = 0;
+		UCSR0C = 0;
 	}
 	return s16_retval;
 }
