@@ -51,6 +51,7 @@ HEADER += -I$(PROJECT_PATH)hal/include/boards
 HEADER += -I$(PROJECT_PATH)utils/debug
 HEADER += -I$(PROJECT_PATH)utils/lcd_mngr
 HEADER += -I$(PROJECT_PATH)utils/timer_mngr
+HEADER += -I$(PROJECT_PATH)mcal/include
 HEADER += -I$(PROJECT_PATH)utils/queue
 #***************************** C FILE SOURCE ******************
 C_SOURCE_PATHS  += $(PROJECT_PATH)common
@@ -59,6 +60,7 @@ C_SOURCE_PATHS  += $(PROJECT_PATH)utils/lcd_mngr
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/timer_mngr
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/queue
 C_SOURCE_PATHS  += $(PROJECT_PATH)hal/source
+C_SOURCE_PATHS  += $(PROJECT_PATH)mcal/source
 
 ifeq ($(PROJECT_NAME), heater_pid_system)
 HEADER += -I$(PROJECT_PATH)app\projects\heater_pid_controller
@@ -105,6 +107,12 @@ $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)utils/queue/%.c
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)hal/source/%.c
 	@echo "Compiling... $<"
 	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
+
+
+$(OUTPUT_PATH)/%.o: $(PROJECT_PATH)mcal/source/%.c
+	@echo "Compiling... $<"
+	@$(CC) -c $(CFLAG) $(HEADER) -O1 -fpack-struct -fshort-enums -g2 -Wall -std=gnu99 -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o) -mmcu=$(MMCU) $< -o $@
+
 
 ifeq ($(PROJECT_NAME), heater_pid_system)
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)app/projects/heater_pid_controller/%.c

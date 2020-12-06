@@ -5,9 +5,7 @@
 #include <avr/io.h>
 #include "BIT_MATH.h"
 #include "debug.h"
-#include "queue.h"
 #include "common.h"
-#include "timer_mngr.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -28,10 +26,12 @@
 
 
 
-#define ADC_CHANNELS_NUM		9
+#define ADC_CHANNELS_NUM				9
 
 #define ADC_POWER_UPDATE_TIME_OUT		100 /*100 * 100ms = 10 sec*/
 #define ADC_VBG							1100
+
+#define MINIMUM_ADC_POWER				2000
 /***************************************************************/
 /**************            Global Variable         *************/
 /***************************************************************/
@@ -41,26 +41,10 @@
 /**************            Static Variable         *************/
 /***************************************************************/
 static bool gb_initialized = FALSE;
-static tstr_queue gstr_adc_queue ;
-static tstr_adc_element gastr_adc_channels[ADC_CHANNELS_NUM];
-static uint_8 gu8_num_of_conversion = 0;
 static uint_16 gu16_adc_vcc = 5000;
-static tstr_timer_mgmt_ins gstr_adc_power_update_timer;
-static bool gb_adc_power_update_timer_fire = FALSE ;
 /***************************************************************/
 /**************    Local APIs Impelementation     *************/
 /***************************************************************/
-
-static void adc_power_update(uint_16 u16_adc_vcc)
-{
-	gu16_adc_vcc = u16_adc_vcc ;
-}
-
-static void adc_power_update_timeout(void * arg)
-{
-	gb_adc_power_update_timer_fire = TRUE;
-}
-
 static void adc_start_conversion(uint_8 u8_channel)
 {
 	if(GET_BIT(ADCSRA,ADSC)== 0)
@@ -68,48 +52,6 @@ static void adc_start_conversion(uint_8 u8_channel)
 		u8_channel &= 0x1F; 				/*add mask for channel to not increase than 7*/
 		ADMUX = (ADMUX & 0xE0)|u8_channel;
 		SET_BIT(ADCSRA,ADSC);
-	}
-}
-
-
-static void adc_read_channel(void)
-{
-	if(gu8_num_of_conversion > 0 && GET_BIT(ADCSRA,ADSC) == 0)
-	{
-		sint_16 s16_retval;
-		tstr_adc_element str_adc_element;
-		s16_retval = queue_dequeue(&gstr_adc_queue, (void *)&str_adc_element);
-		if(s16_retval == SUCCESS)
-		{
-			uint_16 u16_adc_val_mv;
-			if(str_adc_element.enu_adc_channel != ADC_BANDGAP_1_22_V)
-			{
-
-				u16_adc_val_mv = (uint_16)(((float)ADC / 1024.0) * (float) gu16_adc_vcc);
-			}
-			else
-			{
-				u16_adc_val_mv = (uint_16)((1024.0 * (float) ADC_VBG)/ (float) ADC);
-			}
-			str_adc_element.pf_adc_read_cb(u16_adc_val_mv);
-			gu8_num_of_conversion--;
-			if(gu8_num_of_conversion > 0)
-			{
-				s16_retval = queue_get_fornt(&gstr_adc_queue, (void *)&str_adc_element);
-				if(s16_retval == SUCCESS)
-				{
-					if(str_adc_element.enu_adc_channel != ADC_BANDGAP_1_22_V)
-					{
-						adc_start_conversion((uint_8)str_adc_element.enu_adc_channel);
-					}
-					else
-					{
-						adc_start_conversion((uint_8)ADC_BANDGAP_1_22_V);
-					}
-				}
-			}
-		}
-
 	}
 }
 /***************************************************************/
@@ -190,52 +132,35 @@ sint_16 adc_init(tenu_adc_prescaler_mode enu_adc_pre)
 		 s16_retval = adc_set_prescaler(enu_adc_pre);
 		 if(s16_retval == SUCCESS)
 		 {
-
-			 timer_mgmt_init();
-
-			 start_timer(&gstr_adc_power_update_timer, ADC_POWER_UPDATE_TIME_OUT, adc_power_update_timeout,  NULL);
+			 gb_initialized = TRUE;
 			 // AREF = AVcc
 			 ADMUX = (1<<REFS0);
-			 gb_initialized = TRUE;
-
-			 /*ADC init queue for adc channels*/
-			 s16_retval = queue_init(&gstr_adc_queue, (uint_8 *)gastr_adc_channels , ADC_CHANNELS_NUM, sizeof(tstr_adc_element));
-
-			 adc_measure_power_supply(adc_power_update);
-
-
 			 ADC_LOG("ADC INITIALIZED SUCCESSFULY \r\n");
 		 }
 	}
 	return s16_retval;
 }
 
-
-sint_16 adc_read(tpf_adc_read_cb pf_adc_read_cb , tenu_adc_channel enu_adc_channel)
+sint_16 adc_read(tenu_adc_channel enu_channel,uint_16 * u16_adc_avg_read,uint_8 u8_ntimes)
 {
 	sint_16 s16_retval = SUCCESS;
-	if(pf_adc_read_cb != NULL && enu_adc_channel <= ADC_CHANNEL_7)
+	if(enu_channel < ADC_INVALID_CHANNEL && u16_adc_avg_read != NULL && u8_ntimes > 0)
 	{
 		if(gb_initialized)
 		{
-			bool b_found = FALSE;
-			tstr_adc_element str_adc_element ;
-			str_adc_element.enu_adc_channel = enu_adc_channel ;
-			str_adc_element.pf_adc_read_cb = pf_adc_read_cb;
-			queue_element_existance(&gstr_adc_queue,(void *)&str_adc_element,&b_found);
-			if(!b_found)
+			while(GET_BIT(ADCSRA,ADSC) != 0); /*wait until the last read finished*/
+			uint_32 u32_adc_read = 0;
+			uint_8 u8_time = u8_ntimes;
+			while(u8_time > 0)
 			{
-				if(gu8_num_of_conversion == 0)
-				{
-					adc_start_conversion(enu_adc_channel);
-				}
-				queue_enqueue(&gstr_adc_queue,(void *)&str_adc_element);
-				gu8_num_of_conversion++;
+				adc_start_conversion(enu_channel);
+				while(GET_BIT(ADCSRA,ADSC) != 0);
+				u8_time --;
+				u32_adc_read += ADC ;
 			}
-			else
-			{
-				s16_retval = ADC_LAST_READ_NOT_FINSHED ;
-			}
+			u32_adc_read /= u8_ntimes;
+			(*u16_adc_avg_read) = (uint_16)(((float)(u32_adc_read) / 1024.0) * (float) gu16_adc_vcc);
+
 		}
 		else
 		{
@@ -250,31 +175,27 @@ sint_16 adc_read(tpf_adc_read_cb pf_adc_read_cb , tenu_adc_channel enu_adc_chann
 }
 
 
-sint_16 adc_measure_power_supply(tpf_adc_read_cb pf_adc_read_cb)
+
+sint_16 adc_measure_power_supply_using_vbg(uint_16 * u16_adc_power_read)
 {
 	sint_16 s16_retval = SUCCESS;
-	if(pf_adc_read_cb != NULL)
+	if(u16_adc_power_read != NULL)
 	{
 		if(gb_initialized)
 		{
-			bool b_found = FALSE;
-			tstr_adc_element str_adc_element ;
-			str_adc_element.enu_adc_channel = ADC_BANDGAP_1_22_V ;
-			str_adc_element.pf_adc_read_cb = pf_adc_read_cb;
-			queue_element_existance(&gstr_adc_queue,(void *)&str_adc_element,&b_found);
-			if(!b_found)
+			while(GET_BIT(ADCSRA,ADSC) != 0); /*wait until the last read finished*/
+			uint_8 u8_ntimes = 10;
+			uint_32 u32_adc_read = 0;
+			uint_8 u8_time = u8_ntimes;
+			while(u8_time > 0)
 			{
-				if(gu8_num_of_conversion == 0)
-				{
-					adc_start_conversion(ADC_BANDGAP_1_22_V);
-				}
-				queue_enqueue(&gstr_adc_queue,(void *)&str_adc_element);
-				gu8_num_of_conversion++;
+				adc_start_conversion(ADC_BANDGAP_1_22_V);
+				while(GET_BIT(ADCSRA,ADSC) != 0);
+				u8_time --;
+				u32_adc_read += ADC ;
 			}
-			else
-			{
-				s16_retval = ADC_LAST_READ_NOT_FINSHED ;
-			}
+			u32_adc_read /= u8_ntimes;
+			(*u16_adc_power_read) = (uint_16)((1024.0 * (float) ADC_VBG)/ (float) u32_adc_read);
 		}
 		else
 		{
@@ -288,15 +209,24 @@ sint_16 adc_measure_power_supply(tpf_adc_read_cb pf_adc_read_cb)
 	return s16_retval;
 }
 
-void adc_dispatch(void)
-{
-	adc_read_channel();
 
-	if(gb_adc_power_update_timer_fire == TRUE)
+sint_16 set_reference_voltage(uint_16 u16_adc_vcc)
+{
+	sint_16 s16_retval = SUCCESS;
+	if(u16_adc_vcc < MINIMUM_ADC_POWER)
 	{
-		gb_adc_power_update_timer_fire = FALSE ;
-		adc_measure_power_supply(adc_power_update);
-		start_timer(&gstr_adc_power_update_timer, ADC_POWER_UPDATE_TIME_OUT, adc_power_update_timeout,  NULL);
+		gu16_adc_vcc = u16_adc_vcc;
 	}
+	else
+	{
+		s16_retval = ADC_CANNOT_SET_POWER_LESS_THAN_MIN_POWER;
+	}
+	return s16_retval;
+}
+
+
+uint_16 get_reference_voltage(void)
+{
+	return gu16_adc_vcc;
 }
 
