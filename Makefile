@@ -15,8 +15,8 @@ CRYSTAL_FRQ :=8000000UL
 #CRYSTAL_FRQ =16000000UL
 #CRYSTAL_FRQ =32000000UL
 
-CC :=avr-gcc
-
+CC := C:\avr-gcc-10.1.0-x64-windows\bin\avr-gcc
+RM := del
 BUILD_TYPE = debug
 #BUILD_TYPE = release
 
@@ -45,14 +45,14 @@ CFLAG +=-DF_CPU=$(CRYSTAL_FRQ)
 CFLAG +=-D$(DEBUG)
 
 #************************* H Header FILES ***************************
-HEADER += -I$(PROJECT_PATH)common
-HEADER += -I$(PROJECT_PATH)hal/include
-HEADER += -I$(PROJECT_PATH)hal/include/boards
-HEADER += -I$(PROJECT_PATH)utils/debug
-HEADER += -I$(PROJECT_PATH)utils/lcd_mngr
-HEADER += -I$(PROJECT_PATH)utils/timer_mngr
-HEADER += -I$(PROJECT_PATH)mcal/include
-HEADER += -I$(PROJECT_PATH)utils/queue
+HEADER += -I"$(PROJECT_PATH)common"
+HEADER += -I"$(PROJECT_PATH)hal/include"
+HEADER += -I"$(PROJECT_PATH)hal/include/boards"
+HEADER += -I"$(PROJECT_PATH)utils/debug"
+HEADER += -I"$(PROJECT_PATH)utils/lcd_mngr"
+HEADER += -I"$(PROJECT_PATH)utils/timer_mngr"
+HEADER += -I"$(PROJECT_PATH)mcal/include"
+HEADER += -I"$(PROJECT_PATH)utils/queue"
 #***************************** C FILE SOURCE ******************
 C_SOURCE_PATHS  += $(PROJECT_PATH)common
 C_SOURCE_PATHS  += $(PROJECT_PATH)utils/debug
@@ -70,9 +70,8 @@ endif
 CFILES += $(foreach var,$(C_SOURCE_PATHS), $(wildcard $(var)/*.c)) 
 
 OBJECTS := $(addprefix $(OUTPUT_PATH)/,$(notdir $(CFILES:%.c=%.o)))
-
-#$(info $(CFILES))
-
+CLEAN_OBJECTS := $(addprefix $(OUTPUT_PATH)\,$(notdir $(CFILES:%.c=%.o)))
+CLEAN_OBJECTS += $(addprefix $(OUTPUT_PATH)\,$(notdir $(CFILES:%.c=%.d)))
 
 all: $(OUTPUT_PATH) $(PROJECT_NAME) size
 
@@ -129,7 +128,7 @@ flash:
 
 clean:
 	@echo "Clean....."
-	@rm -rf $(OBJECTS) $(OUTPUT_PATH)/$(PROJECT_NAME).hex $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OUTPUT_PATH)/$(PROJECT_NAME).map
+	@-$(RM) $(CLEAN_OBJECTS) $(OUTPUT_PATH)\$(PROJECT_NAME).hex $(OUTPUT_PATH)\$(PROJECT_NAME).elf $(OUTPUT_PATH)\$(PROJECT_NAME).map
 	
 	
 	

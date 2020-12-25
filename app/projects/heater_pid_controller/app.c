@@ -7,11 +7,11 @@
 #include "timer_mngr.h"
 #include "flash.h"
 #include "lcd_profile.h"
-#include <avr/io.h>
 #include "adc.h"
 #include "heater_sensor.h"
 #include "gpio.h"
 #include "common.h"
+#include "heater_actuator.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -117,16 +117,21 @@ void t_cb2(void *arg)
 	b_done = TRUE;
 }
 
-
 /***************************************************************/
 /**************    Global APIs Impelementation     *************/
 /***************************************************************/
 
 void app_init(void)
 {
-	DDRB = 0xff;
 	uint_16 data = 2056;
 	uint_32 sensor_data = 0;
+
+	SYS_LOGGER("%d\r\n",heater_actuator_init());
+	SYS_LOGGER("%d\r\n",heater_actuator_write(20, HA_OUTPUT_A));
+	SYS_LOGGER("%d\r\n",heater_actuator_write(50, HA_OUTPUT_B));
+	SYS_LOGGER("%d\r\n",heater_actuator_write(70, HA_OUTPUT_C));
+	SYS_LOGGER("%d\r\n",heater_actuator_write(101, HA_OUTPUT_C));
+
 	lcd_profile_init();
 	SYS_LOGGER("%d\r\n",heater_sensor_init());
 	SYS_LOGGER("%d\r\n",heater_sensor_read(&str_heater_sensor3, &sensor_data));

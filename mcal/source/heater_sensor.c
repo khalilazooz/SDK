@@ -259,7 +259,7 @@ sint_16 heater_sensor_calibrate(tstr_heater_sensor const * str_heater_sensor ,ui
 		}
 		case HEATER_SENSOR_THERMOCOUPLE:
 		{
-			double * pdouble_d0 = (*(str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_tc.thermocouple_d0));
+			float * pdouble_d0 = ((str_heater_sensor->str_heater_sensor_conf.uni_sensor_conf.str_tc.thermocouple_d0));
 			float double_d0_snsr_rd_1 = (u32_snsr_cal_rd_1-u32_snsr_rd_1)/1000.0;
 			float double_d0_snsr_rd_2 = (u32_snsr_cal_rd_2-u32_snsr_rd_2)/1000.0;
 			float double_d0_avrg = (double_d0_snsr_rd_1 + double_d0_snsr_rd_2)/2;
