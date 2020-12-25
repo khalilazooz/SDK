@@ -12,6 +12,7 @@
 #include "gpio.h"
 #include "common.h"
 #include "heater_actuator.h"
+#include "led.h"
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
@@ -126,11 +127,14 @@ void app_init(void)
 	uint_16 data = 2056;
 	uint_32 sensor_data = 0;
 
+	tstr_led_module_param str_led_module_param = {.u16_led_blink_off_period = 10 , .u16_led_blink_on_period = 10 ,.u16_led_flash_off_period = 10 , .u16_led_flash_on_period = 2};
+	led_init(&str_led_module_param);
+	led_blink(GPIO_PORTB , GPIO_PIN2);
 	SYS_LOGGER("%d\r\n",heater_actuator_init());
 	SYS_LOGGER("%d\r\n",heater_actuator_write(20, HA_OUTPUT_A));
 	SYS_LOGGER("%d\r\n",heater_actuator_write(50, HA_OUTPUT_B));
 	SYS_LOGGER("%d\r\n",heater_actuator_write(70, HA_OUTPUT_C));
-	SYS_LOGGER("%d\r\n",heater_actuator_write(101, HA_OUTPUT_C));
+	SYS_LOGGER("%d\r\n",heater_actuator_write(90, HA_OUTPUT_C));
 
 	lcd_profile_init();
 	SYS_LOGGER("%d\r\n",heater_sensor_init());
@@ -161,4 +165,5 @@ void app_dispatch(void)
 		SYS_LOGGER("%d\r\n",data);
 	}
 	lcd_profile_dispatch();
+	led_dispatch();
 }

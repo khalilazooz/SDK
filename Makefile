@@ -15,7 +15,7 @@ CRYSTAL_FRQ :=8000000UL
 #CRYSTAL_FRQ =16000000UL
 #CRYSTAL_FRQ =32000000UL
 
-CC := C:\avr-gcc-10.1.0-x64-windows\bin\avr-gcc
+
 RM := del
 BUILD_TYPE = debug
 #BUILD_TYPE = release
@@ -32,6 +32,12 @@ endif
 
 
 CFLAG = -funsigned-char -funsigned-bitfields -nostartfiles -lm
+
+############################# COMPILING PATHS ##################
+SIZE := C:\avr-gcc-10.1.0-x64-windows\bin\avr-size
+OBJCPY := C:\avr-gcc-10.1.0-x64-windows\avr\bin\objcopy
+CC := C:\avr-gcc-10.1.0-x64-windows\bin\avr-gcc
+##############################################################
 #************************** SOURCE PATH AND OUTPUT PATH****************
 
 OUTPUT_PATH = output
@@ -79,7 +85,7 @@ all: $(OUTPUT_PATH) $(PROJECT_NAME) size
 $(PROJECT_NAME): $(OBJECTS) 
 	@echo "Generating... $(PROJECT_NAME).map, $(PROJECT_NAME).elf and $(PROJECT_NAME).hex files"
 	@$(CC) -Wl,-Map,$(OUTPUT_PATH)/$(PROJECT_NAME).map -mmcu=$(MMCU) -o $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OBJECTS) $(HEADER)
-	@avr-objcopy -O ihex -R .eeprom -R .fuse -R .lock -R .signature  $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OUTPUT_PATH)/$(PROJECT_NAME).hex
+	@$(OBJCPY) -O ihex -R .eeprom -R .fuse -R .lock -R .signature  $(OUTPUT_PATH)/$(PROJECT_NAME).elf $(OUTPUT_PATH)/$(PROJECT_NAME).hex
 
 $(OUTPUT_PATH)/%.o: $(PROJECT_PATH)common/%.c 
 	@echo "Compiling... $<"
@@ -133,4 +139,4 @@ clean:
 	
 	
 size: 
-	@avr-size -B $(OUTPUT_PATH)/$(PROJECT_NAME).elf
+	@$(SIZE) -B $(OUTPUT_PATH)/$(PROJECT_NAME).elf

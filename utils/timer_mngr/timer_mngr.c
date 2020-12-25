@@ -9,7 +9,7 @@
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
-#define TIMER_MGMT_LOG_ENABLE
+//#define TIMER_MGMT_LOG_ENABLE
 
 #ifdef TIMER_MGMT_LOG_ENABLE
 #define TMR_LOG(...)				SYS_LOGGER("[TM]: "__VA_ARGS__)
@@ -121,6 +121,7 @@ static void timer_cb(void)
 		if (temp->u16_timer_100ms_remain == 0)
 		{
 			temp->pf_timer_cb(temp->arg_cb);
+			temp->timer_enable = FALSE;
 			remove_timer_lst(&gstr_head , temp);
 		}
 		temp = temp->next;
@@ -143,26 +144,29 @@ sint_16 timer_mgmt_deinit()
 }
 sint_16 start_timer(tstr_timer_mgmt_ins * timer_inst, uint_16 time_100ms  , void(*pf_cb)(void * arg) , void * arg)
 {
-	if (!timer_exist(&gstr_head,timer_inst))
+	if (timer_inst->timer_enable == FALSE)
 	{
-		if (gstr_head == NULL)
+		if (!timer_exist(&gstr_head,timer_inst))
 		{
-			if (gb_init)
+			if (gstr_head == NULL)
 			{
-				start_hal_timer(1);
-			}else
-			{
-				TMR_LOG_ERR("Can not start before timer init");
+				if (gb_init)
+				{
+					start_hal_timer(1);
+				}else
+				{
+					TMR_LOG_ERR("Can not start before timer init");
+				}
 			}
+			timer_inst->u16_timer_100ms_remain = time_100ms;
+			timer_inst->u16_timer_100ms = time_100ms;
+			timer_inst->pf_timer_cb = pf_cb ;
+			timer_inst->arg_cb = arg;
+			timer_inst->timer_enable = TRUE;
+			timer_inst->next = NULL;
+			add_timer_lst(&gstr_head,timer_inst);
+
 		}
-		timer_inst->u16_timer_100ms_remain = time_100ms;
-		timer_inst->u16_timer_100ms = time_100ms;
-		timer_inst->pf_timer_cb = pf_cb ;
-		timer_inst->arg_cb = arg;
-		timer_inst->timer_enable = TRUE;
-		timer_inst->next = NULL;
-		add_timer_lst(&gstr_head,timer_inst);
-		
 	}
 	else
 	{
@@ -174,9 +178,13 @@ sint_16 stop_timer(tstr_timer_mgmt_ins * timer_inst)
 {
 	if (timer_inst != NULL)
 	{
-		if (timer_exist(&gstr_head,timer_inst))
+		if(timer_inst->timer_enable == TRUE)
 		{
-			remove_timer_lst(&gstr_head,timer_inst);
+			if (timer_exist(&gstr_head,timer_inst))
+			{
+				remove_timer_lst(&gstr_head,timer_inst);
+				timer_inst->timer_enable = FALSE;
+			}
 		}
 	}
 	return SUCCESS;

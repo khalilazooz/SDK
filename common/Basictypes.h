@@ -46,6 +46,10 @@
 #define PWM_ERROR_BASE				(-600)
 
 #define HEATER_ACTUATOR_ERROR_BASE  (-700)
+
+#define GPIO_ERROR_BASE				(-800)
+
+#define LED_ERROR_BASE				(-900)
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
