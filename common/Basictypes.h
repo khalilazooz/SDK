@@ -33,18 +33,20 @@
 #define INVALID_ARGUMENT			-2
 
 
-#define UART_ERROR_BASE				-100
+#define UART_ERROR_BASE				(-100)
 
-#define FLASH_ERROR_BASE			-200
+#define FLASH_ERROR_BASE			(-200)
 
-#define ADC_ERROR_BASE				-300
+#define ADC_ERROR_BASE				(-300)
 
-#define QUEUE_ERROR_BASE			-400
+#define QUEUE_ERROR_BASE			(-400)
 
-#define HEATER_SESOR_ERROR_BASE		-500
+#define HEATER_SESOR_ERROR_BASE		(-500)
 
+#define PWM_ERROR_BASE				(-600)
 
-#define PWM_ERROR_BASE				-600/***************************************************************/
+#define HEATER_ACTUATOR_ERROR_BASE  (-700)
+/***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
 

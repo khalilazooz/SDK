@@ -13,7 +13,7 @@
 /**************            Global Variable         *************/
 /***************************************************************/
 
-tstr_row_data row1 = {
+static tstr_row_data row1 = {
 	.u8_id = 0,
 	.au8_data="SP      ",
 	.enu_data_type = DATA_WITH_VARIABLE,
@@ -21,7 +21,7 @@ tstr_row_data row1 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row2 = {
+static tstr_row_data row2 = {
 	.u8_id = 1,
 	.au8_data="PV      ",
 	.enu_data_type = DATA_WITH_VARIABLE,
@@ -29,7 +29,7 @@ tstr_row_data row2 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row3 = {
+static tstr_row_data row3 = {
 	.u8_id = 2,
 	.au8_data="Config",
 	.enu_data_type = DATA_WITH_LINK,
@@ -37,7 +37,7 @@ tstr_row_data row3 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row4 = {
+static tstr_row_data row4 = {
 	.u8_id = 0,
 	.au8_data="Adj SP  ",
 	.enu_data_type = DATA_WITH_LINK,
@@ -45,7 +45,7 @@ tstr_row_data row4 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row6 = {
+static tstr_row_data row6 = {
 	.u8_id = 1,
 	.au8_data="Out Type",
 	.enu_data_type = DATA_WITH_LINK,
@@ -53,7 +53,7 @@ tstr_row_data row6 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row9 = {
+static tstr_row_data row9 = {
 	.u8_id = 2,
 	.au8_data="Ctr Type",
 	.enu_data_type = DATA_WITH_LINK,
@@ -61,7 +61,7 @@ tstr_row_data row9 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row5 = {
+static tstr_row_data row5 = {
 	.u8_id = 0,
 	.au8_data="Adj SP    ",
 	.enu_data_type = DATA_WITH_INPUT,
@@ -69,7 +69,7 @@ tstr_row_data row5 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row7 = {
+static tstr_row_data row7 = {
 	.u8_id = 0,
 	.au8_data="SSR",
 	.enu_data_type = DATA,
@@ -77,7 +77,7 @@ tstr_row_data row7 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row8 = {
+static tstr_row_data row8 = {
 	.u8_id = 1,
 	.au8_data="RLY",
 	.enu_data_type = DATA,
@@ -85,7 +85,7 @@ tstr_row_data row8 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row10 = {
+static tstr_row_data row10 = {
 	.u8_id = 0,
 	.au8_data="AT",
 	.enu_data_type = DATA_WITH_LINK,
@@ -93,7 +93,7 @@ tstr_row_data row10 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row13 = {
+static tstr_row_data row13 = {
 	.u8_id = 1,
 	.au8_data="PID",
 	.enu_data_type = DATA_WITH_LINK,
@@ -101,7 +101,7 @@ tstr_row_data row13 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row17 = {
+static tstr_row_data row17 = {
 	.u8_id = 2,
 	.au8_data="ON/OFF",
 	.enu_data_type = DATA,
@@ -109,7 +109,7 @@ tstr_row_data row17 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row11 = {
+static tstr_row_data row11 = {
 	.u8_id = 0,
 	.au8_data="ON            ",
 	.enu_data_type = DATA,
@@ -117,7 +117,7 @@ tstr_row_data row11 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row12 = {
+static tstr_row_data row12 = {
 	.u8_id = 1,
 	.au8_data="OFF           ",
 	.enu_data_type = DATA,
@@ -125,7 +125,7 @@ tstr_row_data row12 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row14 = {
+static tstr_row_data row14 = {
 	.u8_id = 0,
 	.au8_data="P         ",
 	.enu_data_type = DATA_WITH_INPUT,
@@ -133,7 +133,7 @@ tstr_row_data row14 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row15 = {
+static tstr_row_data row15 = {
 	.u8_id = 1,
 	.au8_data="I         ",
 	.enu_data_type = DATA_WITH_INPUT,
@@ -141,7 +141,7 @@ tstr_row_data row15 = {
 	.pstr_next_page = NULL,
 };
 
-tstr_row_data row16 = {
+static tstr_row_data row16 = {
 	.u8_id = 2,
 	.au8_data="D         ",
 	.enu_data_type = DATA_WITH_INPUT,
@@ -152,7 +152,7 @@ tstr_row_data row16 = {
 
 const tstr_row_data * a_page1_rows[]= {&row1,&row2,&row3};
 
-tstr_lcd_mangr_inst page1 = {
+static const tstr_lcd_mangr_inst page1 = {
 .pastr_row_data = (tstr_row_data **)a_page1_rows,
 .u8_rows_num = 3,
 .u8_row_idx = 0,
@@ -163,7 +163,7 @@ tstr_lcd_mangr_inst page1 = {
 
 const tstr_row_data * a_Page2_rows[]= {&row4,&row6,&row9};
 
-tstr_lcd_mangr_inst Page2 = {
+static const tstr_lcd_mangr_inst Page2 = {
 .pastr_row_data = (tstr_row_data **)a_Page2_rows,
 .u8_rows_num = 3,
 .u8_row_idx = 0,
@@ -174,7 +174,7 @@ tstr_lcd_mangr_inst Page2 = {
 
 const tstr_row_data * a_Page3_rows[]= {&row5};
 
-tstr_lcd_mangr_inst Page3 = {
+static const tstr_lcd_mangr_inst Page3 = {
 .pastr_row_data = (tstr_row_data **)a_Page3_rows,
 .u8_rows_num = 1,
 .u8_row_idx = 0,
@@ -185,7 +185,7 @@ tstr_lcd_mangr_inst Page3 = {
 
 const tstr_row_data * a_Page4_rows[]= {&row7,&row8};
 
-tstr_lcd_mangr_inst Page4 = {
+static const tstr_lcd_mangr_inst Page4 = {
 .pastr_row_data = (tstr_row_data **)a_Page4_rows,
 .u8_rows_num = 2,
 .u8_row_idx = 0,
@@ -196,7 +196,7 @@ tstr_lcd_mangr_inst Page4 = {
 
 const tstr_row_data * a_Page5_rows[]= {&row10,&row13,&row17};
 
-tstr_lcd_mangr_inst Page5 = {
+static const tstr_lcd_mangr_inst Page5 = {
 .pastr_row_data = (tstr_row_data **)a_Page5_rows,
 .u8_rows_num = 3,
 .u8_row_idx = 0,
@@ -207,7 +207,7 @@ tstr_lcd_mangr_inst Page5 = {
 
 const tstr_row_data * a_Page6_rows[]= {&row11,&row12};
 
-tstr_lcd_mangr_inst Page6 = {
+static const tstr_lcd_mangr_inst Page6 = {
 .pastr_row_data = (tstr_row_data **)a_Page6_rows,
 .u8_rows_num = 2,
 .u8_row_idx = 0,
@@ -218,7 +218,7 @@ tstr_lcd_mangr_inst Page6 = {
 
 const tstr_row_data * a_Page7_rows[]= {&row14,&row15,&row16};
 
-tstr_lcd_mangr_inst Page7 = {
+static const tstr_lcd_mangr_inst Page7 = {
 .pastr_row_data = (tstr_row_data **)a_Page7_rows,
 .u8_rows_num = 3,
 .u8_row_idx = 0,
