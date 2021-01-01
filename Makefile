@@ -44,6 +44,8 @@ CFLAG +=-D$(PROJECT_NAME)
 CFLAG +=-DF_CPU=$(CRYSTAL_FRQ)
 CFLAG +=-D$(DEBUG)
 
+CFLAG +=-DHEATER_ACTUATOR
+
 #************************* H Header FILES ***************************
 HEADER += -I"$(PROJECT_PATH)common"
 HEADER += -I"$(PROJECT_PATH)hal/include"

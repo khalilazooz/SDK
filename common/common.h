@@ -16,6 +16,14 @@
 #define MEMSET				sys_memset
 #define LN					sys_ln
 #define EXP					sys_exp
+
+#define ERROR_BREAK(input)	{\
+								if(input != SUCCESS)\
+								{\
+									break;\
+								}\
+							}
+
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
