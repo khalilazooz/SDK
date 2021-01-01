@@ -35,7 +35,6 @@
 
 #define SELECT_ROW									0
 #define UPDATE_VALUE								1
-#define GET_BIT(REGISTER,BIT_NO) ((REGISTER>>BIT_NO)&1)
 #define MIN(a,b) ((a>b)?(b):(a))
 
 #define IDLE_CODE			0

@@ -100,7 +100,7 @@ float sys_ln(float y)
     {
         log2++;
     }
-    divisor = sys_pow(2 , log2);
+    divisor = 1ULL << log2;
     x = y / divisor;    // FInd the remainder value between [1.0, 2.0] then calculate the natural log of this remainder using a polynomial approximation
     result = -1.7417939 + (2.8212026 + (-1.4699568 + (0.44717955 - 0.056570851 * x) * x) * x) * x; //This polynomial approximates ln(x) between [1,2]
     result = result + ((float)log2) * LN_2 - LN_SCALING_FACTOR; // Using the log product rule Log(A) + Log(B) = Log(AB) and the log base change rule log_x(A) = log_y(A)/Log_y(x), calculate all the components in base e and then sum them: = Ln(x_remainder) + (log_2(x_integer) * ln(2)) - ln(SCALING_FACTOR)

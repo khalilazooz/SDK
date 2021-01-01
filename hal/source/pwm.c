@@ -127,10 +127,18 @@ sint_16 pwm_init(tenu_pwm_prescaler lenu_pwm_prescaler)
 			}
 			genu_pwm_prescaler = lenu_pwm_prescaler;
 			PWM_LOG("pwm_freq = %ld \r\n",(uint_32)((float)F_CPU/((float)CLOCKS * (float)u16_pwm_prescaler)));
+
 			gb_pwm_initialized = TRUE;
-			gpio_set_pin_direction(GPIO_PORT_E,GPIO_PIN3,GPIO_OUTPUT);
-			gpio_set_pin_direction(GPIO_PORT_E,GPIO_PIN4,GPIO_OUTPUT);
-			gpio_set_pin_direction(GPIO_PORT_E,GPIO_PIN5,GPIO_OUTPUT);
+
+			gpio_init();
+
+			gpio_select(GPIO_PORTE,GPIO_PIN3);
+			gpio_select(GPIO_PORTE,GPIO_PIN4);
+			gpio_select(GPIO_PORTE,GPIO_PIN5);
+
+			gpio_set_pin_direction(GPIO_PORTE,GPIO_PIN3,GPIO_OUTPUT);
+			gpio_set_pin_direction(GPIO_PORTE,GPIO_PIN4,GPIO_OUTPUT);
+			gpio_set_pin_direction(GPIO_PORTE,GPIO_PIN5,GPIO_OUTPUT);
 
 			//FAST PWM MODE 8 bits
 			/*	WGMn3	Value = 0		>>  TCCR3B	(Bit-> 4) // WGM33
