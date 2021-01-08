@@ -51,7 +51,7 @@ CFLAG +=-DF_CPU=$(CRYSTAL_FRQ)
 CFLAG +=-D$(DEBUG)
 
 CFLAG +=-DHEATER_ACTUATOR
-
+CFLAG +=-DHEATER_SENSOR
 #************************* H Header FILES ***************************
 HEADER += -I"$(PROJECT_PATH)common"
 HEADER += -I"$(PROJECT_PATH)hal/include"
