@@ -47,7 +47,7 @@ sint_16 heater_actuator_write(uint_8 u8_heater_pwr  , tenu_heater_actuator_outpu
 	sint_16 u16_retval = SUCCESS;
 	if(gb_heater_actuator_init)
 	{
-		if((u8_heater_pwr > 0 && u8_heater_pwr <= 100) && enu_heater_actuator_output <HA_OUTPUT_INVALID)
+		if((u8_heater_pwr > 0 && u8_heater_pwr <= 100) && enu_heater_actuator_output < HA_OUTPUT_INVALID)
 		{
 			/*Mapping Power Percent To 256 register value*/
 			uint_8 u8_duty = (uint_8)(256.0 *((float)u8_heater_pwr/100.0));
