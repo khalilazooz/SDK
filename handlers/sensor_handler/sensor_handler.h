@@ -1,6 +1,13 @@
+/*
+ * sensor_handler.h
+ *
+ *  Created on: Jan 1, 2021
+ *      Author: Khalil azooz
+ */
 
-#ifndef _COMMON_H_
-#define _COMMON_H_
+#ifndef SENSOR_HANDLER_H_
+#define SENSOR_HANDLER_H_
+
 /***************************************************************/
 /**************             includes               *************/
 /***************************************************************/
@@ -10,20 +17,10 @@
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
-#define MEMCPY				sys_memcpy
-#define MEMCMP				sys_memcmp
-#define POW					sys_pow
-#define MEMSET				sys_memset
-#define LN					sys_ln
-#define EXP					sys_exp
 
-#define ERROR_BREAK(input)	{\
-								if(input != SUCCESS)\
-								{\
-									break;\
-								}\
-							}
+#define SENSOR_HANDLER_NOT_INITIALIZED_YET 		(SENSOR_HANDLER_ERROR_BASE - 1)
 
+#define SENSOR_HANDLER_INVALID_PARAMETER			(SENSOR_HANDLER_ERROR_BASE - 2)
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
@@ -31,26 +28,30 @@
 /***************************************************************/
 /**************					Enumes		       *************/
 /***************************************************************/
-
+typedef enum _tenu_sensor_type
+{
+#ifdef HEATER_SENSOR
+	HEATER_SENSOR_TYP,
+#endif
+	INVALID_SENSOR_TYP,
+}tenu_sensor_type;
 
 /***************************************************************/
 /************         Structure and Unions         *************/
 /***************************************************************/
 
-
+typedef struct _tstr_sensor_info
+{
+	tenu_sensor_type enu_sensor_type;
+	void * pv_sensor_data ;
+}tstr_sensor_info;
 /***************************************************************/
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
 
-void sys_memcpy(void * ps8_dest ,const void * ps8_src , uint_16 u16_sz );
-void sys_memset(void * ps8_dest ,const uint_8 u8_watermark, uint_16 u16_sz);
-sint_8 sys_memcmp(const void * str1 ,const void * str2 , uint_8 u8_sz );
-double sys_pow(double u16_data1 , uint_16 u16_data2);
-float sys_ln(float y);
-float sys_exp(float data);
-#endif /*_COMMON_H_*/
+sint_16 sensor_handler_init(void);
+sint_16 sensor_handler_read(tstr_sensor_info * str_sensor_info , uint_32 * u32_read_val);
+sint_16 sensor_handler_calibrate(tstr_sensor_info * str_sensor_info ,uint_32 u32_snsr_rd_1 ,uint_32 u32_snsr_rd_2, uint_32 u32_snsr_cal_rd_1,uint_32 u32_snsr_cal_rd_2);
 
 
-
-
-
+#endif /* SENSOR_HANDLER_H_ */

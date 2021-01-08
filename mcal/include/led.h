@@ -1,6 +1,6 @@
 
-#ifndef _COMMON_H_
-#define _COMMON_H_
+#ifndef _LED_H_
+#define _LED_H_
 /***************************************************************/
 /**************             includes               *************/
 /***************************************************************/
@@ -10,20 +10,8 @@
 /***************************************************************/
 /**************              Macros                *************/
 /***************************************************************/
-#define MEMCPY				sys_memcpy
-#define MEMCMP				sys_memcmp
-#define POW					sys_pow
-#define MEMSET				sys_memset
-#define LN					sys_ln
-#define EXP					sys_exp
-
-#define ERROR_BREAK(input)	{\
-								if(input != SUCCESS)\
-								{\
-									break;\
-								}\
-							}
-
+#define LED_INVALID_PARAMETER				(LED_ERROR_BASE -1)
+#define LED_NOT_INTIALIZED_YET				(LED_ERROR_BASE -2)
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
@@ -36,19 +24,30 @@
 /***************************************************************/
 /************         Structure and Unions         *************/
 /***************************************************************/
+typedef struct _tstr_led_module_param
+{
+	uint_16 u16_led_blink_on_period;
+	uint_16 u16_led_blink_off_period;
+	uint_16 u16_led_flash_on_period;
+	uint_16 u16_led_flash_off_period;
+}tstr_led_module_param;
 
-
+typedef struct _tstr_led_attr
+{
+	uint_8 u3_port:3;
+	uint_8 u3_pin:3;
+	uint_8 u2_times:2;
+}tstr_led_attr;
 /***************************************************************/
 /**************     Global APIs DECELERATIONs      *************/
 /***************************************************************/
-
-void sys_memcpy(void * ps8_dest ,const void * ps8_src , uint_16 u16_sz );
-void sys_memset(void * ps8_dest ,const uint_8 u8_watermark, uint_16 u16_sz);
-sint_8 sys_memcmp(const void * str1 ,const void * str2 , uint_8 u8_sz );
-double sys_pow(double u16_data1 , uint_16 u16_data2);
-float sys_ln(float y);
-float sys_exp(float data);
-#endif /*_COMMON_H_*/
+sint_16 led_init(tstr_led_module_param * pstr_led_module_param);
+sint_16 led_on(uint_8 u8_port,uint_8 u8_pin);
+sint_16 led_blink(uint_8 u8_port,uint_8 u8_pin);
+sint_16 led_flash(uint_8 u8_port,uint_8 u8_pin);
+sint_16 led_off(uint_8 u8_port,uint_8 u8_pin);
+void led_dispatch(void);
+#endif /*_LED_H_*/
 
 
 

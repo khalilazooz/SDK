@@ -50,6 +50,10 @@
 #define GPIO_ERROR_BASE				(-800)
 
 #define LED_ERROR_BASE				(-900)
+
+#define ACTUATOR_HANDLER_ERROR_BASE (-1000)
+
+#define SENSOR_HANDLER_ERROR_BASE	(-1100)
 /***************************************************************/
 /**************       Global Extern Variables      *************/
 /***************************************************************/
